@@ -3,30 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Master Dashboard v5.7</title>
+    <title>Ultra Dashboard v6.0</title>
     <!-- Fonts & Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <!-- Tailwind CSS for utility and modern look -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
         .mint-gradient { background: linear-gradient(135deg, #56e39f 0%, #59c9a5 100%); }
         .violet-card { background-color: #2a1f2d; }
-        .stat-card { transition: all 0.3s ease; }
-        .stat-card:hover { transform: translateY(-4px); }
         .custom-scrollbar::-webkit-scrollbar { width: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #59c9a5; border-radius: 10px; }
     </style>
 </head>
 <body class="text-slate-800">
 
-    <!-- LOADING OVERLAY -->
+    <!-- LOADER -->
     <div id="loader" class="fixed inset-0 z-[99] bg-slate-900 flex flex-col items-center justify-center text-white transition-opacity duration-500">
         <div class="w-12 h-12 border-4 border-emerald-400 border-t-transparent rounded-full animate-spin mb-4"></div>
-        <p id="loader-text" class="font-black text-[10px] uppercase tracking-[0.3em] opacity-50">Mengamankan Sesi...</p>
-        <button id="btn-manual-retry" class="hidden mt-6 px-4 py-2 bg-rose-500 text-white rounded-lg text-xs font-bold uppercase">Coba Lagi</button>
+        <p id="loader-text" class="font-black text-[10px] uppercase tracking-[0.3em] opacity-50 text-center">Menghubungkan ke Pusat Data...</p>
+        <button id="btn-retry" class="hidden mt-6 px-6 py-2 bg-rose-500 rounded-lg text-xs font-bold uppercase tracking-widest">Coba Lagi</button>
     </div>
 
     <div class="max-w-7xl mx-auto px-4 py-6 lg:px-8 lg:py-8 space-y-6">
@@ -34,98 +30,82 @@
         <!-- HEADER -->
         <header class="violet-card text-white rounded-3xl p-6 lg:p-8 shadow-2xl flex flex-col md:flex-row justify-between items-center border-b-8 border-emerald-400">
             <div class="flex items-center gap-5">
-                <div class="mint-gradient p-4 rounded-2xl shadow-lg shadow-emerald-500/20">
-                    <i class="fas fa-shield-halved text-slate-900 text-3xl"></i>
+                <div class="mint-gradient p-4 rounded-2xl shadow-lg">
+                    <i class="fas fa-microchip text-slate-900 text-3xl"></i>
                 </div>
                 <div>
-                    <h1 class="text-2xl lg:text-3xl font-extrabold tracking-tight">Master Control <span class="text-emerald-400">v5.7</span></h1>
-                    <div class="flex items-center gap-2 mt-1">
-                        <span class="inline-block w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></span>
-                        <p class="text-slate-400 text-[10px] font-black uppercase tracking-widest">Real-time Telemetry Stream</p>
-                    </div>
+                    <h1 class="text-2xl lg:text-3xl font-extrabold tracking-tight">Ultra Control <span class="text-emerald-400">v6.0</span></h1>
+                    <p class="text-slate-400 text-[10px] font-black uppercase tracking-widest mt-1">Sistem Monitoring Presisi Laboratorium</p>
                 </div>
             </div>
 
-            <div id="status-anoda-wrapper" class="mt-6 md:mt-0 px-8 py-4 rounded-2xl border-2 border-slate-700 bg-white/5 backdrop-blur-sm flex items-center gap-4 transition-all">
+            <div id="status-wrapper" class="mt-6 md:mt-0 px-8 py-4 rounded-2xl border-2 border-slate-700 bg-white/5 flex items-center gap-4 transition-all duration-500">
                 <div class="text-right">
-                    <p class="text-[9px] uppercase font-black opacity-40 leading-none mb-1">Status Anoda Global</p>
+                    <p class="text-[9px] uppercase font-black opacity-40 leading-none mb-1">Status Proteksi</p>
                     <p id="global-status-text" class="text-xl font-black leading-none text-slate-400">CONNECTING</p>
                 </div>
-                <i id="status-icon" class="fas fa-circle-nodes text-2xl text-slate-600"></i>
+                <i id="status-icon" class="fas fa-shield-halved text-2xl text-slate-600"></i>
             </div>
         </header>
 
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
             
-            <!-- SIDEBAR: CALIBRATION & FILTERS -->
+            <!-- SIDEBAR: CALIBRATION -->
             <aside class="space-y-6">
-                <!-- KALIBRASI -->
-                <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200">
+                <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 border-t-8 border-emerald-400">
                     <div class="flex items-center gap-2 mb-5 border-b border-slate-100 pb-3">
-                        <i class="fas fa-sliders text-emerald-500"></i>
-                        <h3 class="font-bold text-xs uppercase tracking-widest text-slate-500">Kalibrasi Sensor</h3>
+                        <i class="fas fa-chart-line text-emerald-500"></i>
+                        <h3 class="font-bold text-xs uppercase tracking-widest text-slate-500">Koreksi Polinomial</h3>
                     </div>
-                    
-                    <div class="space-y-4">
-                        <div class="group">
-                            <label class="text-[9px] font-black text-slate-400 uppercase mb-1 block">Slope Factor (m)</label>
-                            <input type="number" id="input-m" step="0.0001" value="1" 
-                                class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl p-3 font-mono text-sm font-bold focus:border-emerald-400 outline-none transition-all">
+                    <p class="text-[10px] text-slate-400 mb-4 font-bold italic text-center">Formula: y = ax² + bx + c</p>
+                    <div class="space-y-3">
+                        <div>
+                            <label class="text-[9px] font-black text-slate-400 uppercase block mb-1">Koefisien A (poly_a)</label>
+                            <input type="number" id="poly-a" step="0.000001" value="-0.0413" class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl p-3 font-mono text-xs font-bold focus:border-emerald-400 outline-none">
                         </div>
-                        <div class="group">
-                            <label class="text-[9px] font-black text-slate-400 uppercase mb-1 block">Intercept Value (c)</label>
-                            <input type="number" id="input-c" step="0.1" value="0"
-                                class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl p-3 font-mono text-sm font-bold focus:border-emerald-400 outline-none transition-all">
+                        <div>
+                            <label class="text-[9px] font-black text-slate-400 uppercase block mb-1">Koefisien B (poly_b)</label>
+                            <input type="number" id="poly-b" step="0.0001" value="1.0512" class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl p-3 font-mono text-xs font-bold focus:border-emerald-400 outline-none">
                         </div>
-                        <button id="btn-save-cal" class="w-full bg-slate-900 text-white rounded-2xl py-4 text-[10px] font-black uppercase tracking-[0.2em] hover:bg-slate-800 transition-all active:scale-95 shadow-xl shadow-slate-900/10 flex items-center justify-center gap-2">
-                            <i class="fas fa-cloud-arrow-up"></i> Update Parameter
+                        <div>
+                            <label class="text-[9px] font-black text-slate-400 uppercase block mb-1">Koefisien C (poly_c)</label>
+                            <input type="number" id="poly-c" step="0.001" value="0.4496" class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl p-3 font-mono text-xs font-bold focus:border-emerald-400 outline-none">
+                        </div>
+                        <div class="pt-4 border-t border-slate-100 mt-4">
+                            <label class="text-[9px] font-black text-slate-400 uppercase block mb-1">Linear Gain (m)</label>
+                            <input type="number" id="input-m" step="0.0001" value="1" class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl p-3 font-mono text-xs font-bold focus:border-emerald-400 outline-none">
+                        </div>
+                        <div>
+                            <label class="text-[9px] font-black text-slate-400 uppercase block mb-1">Linear Offset (c)</label>
+                            <input type="number" id="input-c" step="0.1" value="0" class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl p-3 font-mono text-xs font-bold focus:border-emerald-400 outline-none">
+                        </div>
+                        <button id="btn-save-all" class="w-full bg-slate-900 text-white rounded-2xl py-4 text-[10px] font-black uppercase tracking-[0.2em] hover:bg-emerald-500 transition-all active:scale-95 shadow-lg mt-4">
+                            Update Semua Parameter
                         </button>
                     </div>
                 </div>
 
-                <!-- FILTER & EXPORT -->
                 <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200">
-                    <div class="flex items-center gap-2 mb-5 border-b border-slate-100 pb-3">
-                        <i class="fas fa-filter text-emerald-500"></i>
-                        <h3 class="font-bold text-xs uppercase tracking-widest text-slate-500">Filter Data</h3>
-                    </div>
-                    
-                    <div class="space-y-4">
-                        <div>
-                            <label class="text-[9px] font-black text-slate-400 uppercase mb-1 block">Pilih Benda Uji</label>
-                            <select id="filter-bu" class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl p-3 text-sm font-bold focus:border-emerald-400 outline-none cursor-pointer">
-                                <option value="all">Semua Sampel</option>
-                                <option value="M1">M1</option>
-                                <option value="M4">M4</option>
-                                <option value="M10">M10</option>
-                                <option value="M14">M14</option>
-                                <option value="MK17">MK17</option>
-                                <option value="MK18">MK18</option>
-                                <option value="MK21">MK21</option>
-                                <option value="MK22">MK22</option>
-                            </select>
-                        </div>
-                        <button id="btn-export" class="w-full bg-emerald-500 text-slate-900 rounded-2xl py-4 text-[10px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-2 hover:bg-emerald-400 transition-all active:scale-95 shadow-xl shadow-emerald-500/20">
-                            <i class="fas fa-file-excel"></i> Ekspor ke .CSV
-                        </button>
-                    </div>
+                    <button id="btn-export" class="w-full bg-emerald-500 text-slate-900 rounded-2xl py-4 text-[10px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-2 hover:bg-emerald-400 transition-all active:scale-95">
+                        <i class="fas fa-file-csv"></i> Ekspor Data Riset
+                    </button>
                 </div>
             </aside>
 
-            <!-- MAIN CONTENT: TABLE LOG -->
-            <main class="lg:col-span-3 h-full">
-                <div class="bg-white rounded-[2rem] shadow-sm border border-slate-200 overflow-hidden flex flex-col h-full min-h-[600px]">
+            <!-- MAIN LOG TABLE -->
+            <main class="lg:col-span-3">
+                <div class="bg-white rounded-[2.5rem] shadow-sm border border-slate-200 overflow-hidden flex flex-col h-full min-h-[600px]">
                     <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
                         <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center">
-                                <i class="fas fa-list-ul text-emerald-600"></i>
+                            <div class="w-12 h-12 rounded-2xl bg-emerald-100 flex items-center justify-center">
+                                <i class="fas fa-database text-emerald-600 text-xl"></i>
                             </div>
                             <div>
-                                <h3 class="font-black text-slate-800 text-sm uppercase tracking-widest">Log Monitoring</h3>
-                                <p class="text-[10px] text-slate-400 font-bold uppercase">Data Sampling Ganda (Averaged)</p>
+                                <h3 class="font-black text-slate-800 text-sm uppercase tracking-widest leading-none">Log Telemetri Real-time</h3>
+                                <p class="text-[9px] text-slate-400 font-bold uppercase mt-1">Z-Score filtering Aktif</p>
                             </div>
                         </div>
-                        <span id="data-counter" class="text-[9px] font-black bg-slate-200 text-slate-600 px-4 py-1.5 rounded-full uppercase tracking-tighter">0 Entri</span>
+                        <span id="data-counter" class="text-[10px] font-black bg-slate-900 text-emerald-400 px-4 py-2 rounded-xl uppercase tracking-tighter shadow-inner">0 Data Log</span>
                     </div>
 
                     <div class="overflow-x-auto flex-grow custom-scrollbar">
@@ -133,34 +113,28 @@
                             <thead class="bg-slate-50 text-[10px] uppercase font-black text-slate-400 border-b border-slate-100 sticky top-0 z-10">
                                 <tr>
                                     <th class="px-6 py-5">Waktu Lokal</th>
-                                    <th class="px-6 py-5">Sampel / Fase</th>
-                                    <th class="px-6 py-5 text-center">On Potential Avg</th>
-                                    <th class="px-6 py-5 text-center">Off Potential Avg</th>
-                                    <th class="px-6 py-5 text-center">Current (mA)</th>
+                                    <th class="px-6 py-5">Identitas BU / Fase</th>
+                                    <th class="px-6 py-5 text-center">On Potential (Avg)</th>
+                                    <th class="px-6 py-5 text-center">Final Potential (Avg)</th>
+                                    <th class="px-6 py-5 text-center">Stability (Diff)</th>
                                 </tr>
                             </thead>
                             <tbody id="table-body" class="divide-y divide-slate-100 font-medium">
-                                <!-- Data akan masuk di sini -->
+                                <!-- Dynamic Rows -->
                             </tbody>
                         </table>
-                        
-                        <!-- EMPTY STATE -->
-                        <div id="empty-state" class="hidden flex flex-col items-center justify-center py-24 text-slate-300">
-                            <i class="fas fa-database text-6xl mb-4 opacity-20"></i>
-                            <p class="font-black uppercase tracking-[0.2em] text-[10px]">Database Belum Terisi</p>
+                        <div id="empty-state" class="hidden flex flex-col items-center justify-center py-32 text-slate-300">
+                            <i class="fas fa-wifi text-6xl mb-4 opacity-10 animate-pulse"></i>
+                            <p class="font-black uppercase tracking-[0.3em] text-[10px]">Menunggu Transmisi Sensor...</p>
                         </div>
                     </div>
 
                     <!-- PAGINATION -->
-                    <div class="p-5 bg-slate-50 border-t border-slate-100 flex justify-between items-center">
-                        <p id="page-indicator" class="text-[9px] text-slate-400 font-black uppercase tracking-widest">Halaman 1 dari 1</p>
+                    <div class="p-6 bg-slate-50 border-t border-slate-100 flex justify-between items-center">
+                        <p id="page-indicator" class="text-[10px] text-slate-400 font-black uppercase tracking-widest">Halaman 1 dari 1</p>
                         <div class="flex gap-3">
-                            <button id="prev-page" class="p-3 rounded-xl bg-white border-2 border-slate-100 hover:border-emerald-400 hover:text-emerald-500 disabled:opacity-30 disabled:hover:border-slate-100 disabled:hover:text-slate-400 transition-all shadow-sm">
-                                <i class="fas fa-chevron-left"></i>
-                            </button>
-                            <button id="next-page" class="p-3 rounded-xl bg-white border-2 border-slate-100 hover:border-emerald-400 hover:text-emerald-500 disabled:opacity-30 disabled:hover:border-slate-100 disabled:hover:text-slate-400 transition-all shadow-sm">
-                                <i class="fas fa-chevron-right"></i>
-                            </button>
+                            <button id="prev-page" class="w-12 h-12 rounded-2xl bg-white border-2 border-slate-100 hover:border-emerald-400 hover:text-emerald-500 disabled:opacity-30 transition-all flex items-center justify-center shadow-sm"><i class="fas fa-chevron-left"></i></button>
+                            <button id="next-page" class="w-12 h-12 rounded-2xl bg-white border-2 border-slate-100 hover:border-emerald-400 hover:text-emerald-500 disabled:opacity-30 transition-all flex items-center justify-center shadow-sm"><i class="fas fa-chevron-right"></i></button>
                         </div>
                     </div>
                 </div>
@@ -168,13 +142,13 @@
         </div>
     </div>
 
-    <!-- FIREBASE MODULAR SDK (v11.6.1) -->
+    <!-- FIREBASE MODULAR SDK -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
 
-        // FALLBACK CONFIGURATION (Untuk penggunaan local)
+        // FALLBACK CONFIG
         let firebaseConfig;
         try {
             firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
@@ -186,153 +160,134 @@
                 messagingSenderId: "703319558184",
                 appId: "1:703319558184:web:4882df38c58cc74f9e8d1d"
             };
-        } catch(e) {
+        } catch (e) {
             console.error("Config Parsing Error:", e);
         }
-
-        const rawAppId = typeof __app_id !== 'undefined' ? __app_id : 'korosi-iot';
-        const appId = rawAppId.replace(/\./g, '_'); 
         
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getDatabase(app);
-        const basePath = `artifacts/${appId}/public/data`;
+        const appIdClean = "korosi-iot";
+        const basePath = `artifacts/${appIdClean}/public/data`;
 
         let allLogs = [];
-        let filteredLogs = [];
         let currentPage = 1;
         const rowsPerPage = 10;
 
-        // 1. AUTHENTICATION FIRST (RULE 3)
-        const initSession = async () => {
+        // AUTH INITIALIZATION WITH FAILOVER
+        const initAuth = async () => {
             const loaderText = document.getElementById('loader-text');
-            const retryBtn = document.getElementById('btn-manual-retry');
+            const retryBtn = document.getElementById('btn-retry');
             
             try {
+                // Rule 3: Always check for custom token FIRST
                 if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    await signInWithCustomToken(auth, __initial_auth_token);
+                    try {
+                        await signInWithCustomToken(auth, __initial_auth_token);
+                    } catch (customAuthError) {
+                        // Fallback to anonymous if custom token fails (mismatch or expired)
+                        console.warn("Custom token failed, falling back to anonymous login:", customAuthError.message);
+                        await signInAnonymously(auth);
+                    }
                 } else {
                     await signInAnonymously(auth);
                 }
-            } catch (err) {
-                console.error("Auth Error:", err);
-                loaderText.innerText = "Gagal Terhubung ke Firebase";
-                loaderText.classList.add('text-rose-400');
+            } catch (err) { 
+                console.error("Critical Auth Failure:", err);
+                loaderText.innerText = "Gagal Terhubung ke Firebase. Silakan Muat Ulang.";
+                loaderText.classList.add('text-rose-500');
                 retryBtn.classList.remove('hidden');
             }
         };
 
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                const loader = document.getElementById('loader');
-                loader.style.opacity = '0';
-                setTimeout(() => loader.classList.add('hidden'), 500);
-                startApp();
+                document.getElementById('loader').style.opacity = '0';
+                setTimeout(() => document.getElementById('loader').classList.add('hidden'), 500);
+                startDashboard();
             }
         });
 
-        // 2. DATA HANDLERS
-        const startApp = () => {
-            // Listen to Global Anode Status
+        const startDashboard = () => {
+            // Global Anode Status
             onValue(ref(db, `${basePath}/status_global`), (snap) => {
                 const data = snap.val();
-                const textEl = document.getElementById('global-status-text');
-                const wrapper = document.getElementById('status-anoda-wrapper');
-                const icon = document.getElementById('status-icon');
-                
                 if (data) {
                     const status = data.status || 'OFF';
+                    const textEl = document.getElementById('global-status-text');
+                    const wrapEl = document.getElementById('status-wrapper');
+                    const iconEl = document.getElementById('status-icon');
+                    
                     textEl.innerText = status;
                     if (status === 'PROTECTED') {
                         textEl.className = "text-xl font-black leading-none text-emerald-400";
-                        wrapper.className = "mt-6 md:mt-0 px-8 py-4 rounded-2xl border-2 border-emerald-500/30 bg-emerald-500/10 flex items-center gap-4 transition-all";
-                        icon.className = "fas fa-shield-heart text-2xl text-emerald-400 animate-pulse";
+                        wrapEl.className = "mt-6 md:mt-0 px-8 py-4 rounded-2xl border-2 border-emerald-500/30 bg-emerald-500/5 flex items-center gap-4 transition-all";
+                        iconEl.className = "fas fa-shield-heart text-2xl text-emerald-400 animate-pulse";
                     } else {
                         textEl.className = "text-xl font-black leading-none text-rose-400";
-                        wrapper.className = "mt-6 md:mt-0 px-8 py-4 rounded-2xl border-2 border-rose-500/30 bg-rose-500/10 flex items-center gap-4 transition-all";
-                        icon.className = "fas fa-shield-slash text-2xl text-rose-400";
+                        wrapEl.className = "mt-6 md:mt-0 px-8 py-4 rounded-2xl border-2 border-rose-500/30 bg-rose-500/5 flex items-center gap-4 transition-all";
+                        iconEl.className = "fas fa-shield-slash text-2xl text-rose-400";
                     }
                 }
             });
 
-            // Listen to Calibration Settings
+            // Remote Calibration Params
             onValue(ref(db, `${basePath}/kalibrasi`), (snap) => {
                 const data = snap.val();
                 if (data) {
+                    document.getElementById('poly-a').value = data.poly_a || -0.0413;
+                    document.getElementById('poly-b').value = data.poly_b || 1.0512;
+                    document.getElementById('poly-c').value = data.poly_c || 0.4496;
                     document.getElementById('input-m').value = data.m || 1;
                     document.getElementById('input-c').value = data.c || 0;
                 }
             });
 
-            // Listen to Main Logs
+            // Monitoring Logs
             onValue(ref(db, `${basePath}/hasil_monitoring_final`), (snap) => {
                 const data = snap.val();
                 if (data) {
                     allLogs = Object.values(data).reverse();
-                    applyFilters();
+                    renderLogs();
+                    document.getElementById('empty-state').classList.add('hidden');
                 } else {
-                    renderTable();
+                    document.getElementById('empty-state').classList.remove('hidden');
                 }
             });
         };
 
-        // 3. UI LOGIC
-        const applyFilters = () => {
-            const bu = document.getElementById('filter-bu').value;
-            filteredLogs = bu === 'all' ? allLogs : allLogs.filter(l => l.bu === bu);
-            currentPage = 1;
-            renderTable();
-        };
-
-        const renderTable = () => {
+        const renderLogs = () => {
             const tbody = document.getElementById('table-body');
-            const emptyState = document.getElementById('empty-state');
-            const dataCountEl = document.getElementById('data-counter');
-            
+            const counter = document.getElementById('data-counter');
             tbody.innerHTML = "";
-            dataCountEl.innerText = `${filteredLogs.length} Entri`;
+            counter.innerText = `${allLogs.length} Data Log`;
 
-            if (filteredLogs.length === 0) {
-                emptyState.classList.remove('hidden');
-                return;
-            }
-            emptyState.classList.add('hidden');
-
-            const totalPages = Math.ceil(filteredLogs.length / rowsPerPage);
+            const totalPages = Math.ceil(allLogs.length / rowsPerPage);
             const start = (currentPage - 1) * rowsPerPage;
             const end = start + rowsPerPage;
-            const pageData = filteredLogs.slice(start, end);
+            const pageData = allLogs.slice(start, end);
 
             pageData.forEach(log => {
                 const row = document.createElement('tr');
-                row.className = "hover:bg-slate-50/80 transition-colors";
+                row.className = "hover:bg-slate-50/80 transition-colors group";
                 
-                const isPH1 = log.fase === 'PH1';
-                const onPotential = isPH1 ? `${Math.round(log.v_on_avg || 0)} mV` : '-';
-                const faseClass = log.fase === 'PH1' ? 'bg-blue-100 text-blue-600' : 
-                                  log.fase === 'PH2' ? 'bg-amber-100 text-amber-600' : 'bg-slate-100 text-slate-500';
-
+                const diff = Math.abs(log.v_off_1 - log.v_off_2).toFixed(1);
+                const onPot = log.fase === 'PH1' ? `${Math.round(log.v_on_avg)} mV` : '-';
+                
                 row.innerHTML = `
                     <td class="px-6 py-5 text-slate-400 tabular-nums text-[11px] font-mono">${log.waktu_lokal || '-'}</td>
                     <td class="px-6 py-5">
-                        <div class="font-bold text-slate-900 flex items-center gap-2">
-                            ${log.bu || '-'} 
-                            <span class="text-slate-400 text-[9px] font-black uppercase bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">
-                                ${log.tp || '-'}
-                            </span>
-                        </div>
-                        <span class="text-[9px] font-black px-2 py-0.5 rounded-full uppercase tracking-tighter mt-1 inline-block ${faseClass}">
-                            ${log.fase || 'STD'}
-                        </span>
+                        <div class="font-extrabold text-slate-800">${log.bu || 'NA'} <span class="text-slate-400 font-bold text-[9px] bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">${log.tp || 'T1/P1'}</span></div>
+                        <div class="text-[9px] font-black uppercase text-emerald-500 tracking-tighter">${log.fase || 'STD'}</div>
                     </td>
-                    <td class="px-6 py-5 text-center font-mono text-slate-400 text-xs">${onPotential}</td>
+                    <td class="px-6 py-5 text-center font-mono text-slate-400 text-xs">${onPot}</td>
                     <td class="px-6 py-5 text-center">
-                        <span class="font-mono font-black text-emerald-600 bg-emerald-50 px-3 py-1 rounded-lg">
-                            ${Math.round(log.v_off_avg || 0)} mV
-                        </span>
+                        <span class="font-mono font-black text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-xl border border-emerald-100 shadow-sm">${Math.round(log.v_off_avg)} mV</span>
                     </td>
-                    <td class="px-6 py-5 text-center font-mono text-slate-600 text-xs tabular-nums">
-                        ${Number(log.i_ma || 0).toFixed(2)} mA
+                    <td class="px-6 py-5 text-center">
+                        <span class="text-[10px] font-black ${diff > 3 ? 'text-rose-500 bg-rose-50 border-rose-200' : 'text-slate-400 bg-slate-50 border-slate-200'} px-2 py-1 rounded-full border opacity-80">
+                            ± ${diff} mV
+                        </span>
                     </td>
                 `;
                 tbody.appendChild(row);
@@ -343,40 +298,39 @@
             document.getElementById('next-page').disabled = currentPage >= totalPages;
         };
 
-        // 4. EVENT LISTENERS
-        document.getElementById('btn-save-cal').onclick = () => {
-            const m = parseFloat(document.getElementById('input-m').value);
-            const c = parseFloat(document.getElementById('input-c').value);
-            if(isNaN(m) || isNaN(c)) return alert("Masukkan angka yang valid");
-            
-            set(ref(db, `${basePath}/kalibrasi`), { m, c })
-                .then(() => alert("Parameter Kalibrasi Berhasil Diperbarui secara Remote!"))
+        // BUTTON ACTIONS
+        document.getElementById('btn-save-all').onclick = () => {
+            const data = {
+                poly_a: parseFloat(document.getElementById('poly-a').value) || 0,
+                poly_b: parseFloat(document.getElementById('poly-b').value) || 1,
+                poly_c: parseFloat(document.getElementById('poly-c').value) || 0,
+                m: parseFloat(document.getElementById('input-m').value) || 1,
+                c: parseFloat(document.getElementById('input-c').value) || 0
+            };
+            set(ref(db, `${basePath}/kalibrasi`), data)
+                .then(() => alert("Parameter Kalibrasi Polinomial & Linear Berhasil Disinkronisasi!"))
                 .catch(err => alert("Gagal Simpan: " + err.message));
         };
 
         document.getElementById('btn-export').onclick = () => {
-            if (filteredLogs.length === 0) return alert("Tidak ada data untuk diekspor");
-            let csv = "Waktu Lokal,Benda Uji,Tipe/Point,Fase,On_1,On_2,On_Avg,Off_1,Off_2,Off_Avg,Arus(mA),Suhu(C),Slope(m),Intercept(c)\n";
-            filteredLogs.forEach(d => {
-                csv += `${d.waktu_lokal || ''},${d.bu || ''},${d.tp || ''},${d.fase || ''},${d.v_on_1 || 0},${d.v_on_2 || 0},${d.v_on_avg || 0},${d.v_off_1 || 0},${d.v_off_2 || 0},${d.v_off_avg || 0},${d.i_ma || 0},${d.suhu || 0},${d.cal_m || 1},${d.cal_c || 0}\n`;
+            if (allLogs.length === 0) return alert("Data kosong");
+            let csv = "Timestamp,BU,T/P,Fase,On_Avg(mV),Off_Avg(mV),Stability_Diff,m,c,poly_a,poly_b,poly_c,Suhu\n";
+            allLogs.forEach(d => {
+                const diff = Math.abs(d.v_off_1 - d.v_off_2).toFixed(2);
+                csv += `${d.waktu_lokal},${d.bu},${d.tp},${d.fase},${d.v_on_avg || 0},${d.v_off_avg},${diff},${d.cal_m},${d.cal_c},${d.poly_a},${d.poly_b},${d.poly_c},${d.suhu}\n`;
             });
             const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `SACP_Report_${new Date().toISOString().split('T')[0]}.csv`;
-            a.click();
-            window.URL.revokeObjectURL(url);
+            const link = document.createElement("a");
+            link.href = URL.createObjectURL(blob);
+            link.download = `SACP_Ultra_Logs_${new Date().toISOString().split('T')[0]}.csv`;
+            link.click();
         };
 
-        document.getElementById('filter-bu').onchange = applyFilters;
-        document.getElementById('prev-page').onclick = () => { if(currentPage > 1) { currentPage--; renderTable(); } };
-        document.getElementById('next-page').onclick = () => { if(currentPage < Math.ceil(filteredLogs.length / rowsPerPage)) { currentPage++; renderTable(); } };
-        document.getElementById('btn-manual-retry').onclick = () => window.location.reload();
+        document.getElementById('prev-page').onclick = () => { if(currentPage > 1) { currentPage--; renderLogs(); } };
+        document.getElementById('next-page').onclick = () => { if(currentPage < Math.ceil(allLogs.length / rowsPerPage)) { currentPage++; renderLogs(); } };
+        document.getElementById('btn-retry').onclick = () => window.location.reload();
 
-        initSession();
-
+        initAuth();
     </script>
 </body>
-
 </html>
