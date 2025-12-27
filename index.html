@@ -3,8 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ultra Dashboard v6.0</title>
-    <!-- Fonts & Icons -->
+    <title>Ultra Dashboard v6.5</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -12,13 +11,10 @@
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
         .mint-gradient { background: linear-gradient(135deg, #56e39f 0%, #59c9a5 100%); }
         .violet-card { background-color: #2a1f2d; }
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #59c9a5; border-radius: 10px; }
     </style>
 </head>
 <body class="text-slate-800">
 
-    <!-- LOADER -->
     <div id="loader" class="fixed inset-0 z-[99] bg-slate-900 flex flex-col items-center justify-center text-white transition-opacity duration-500">
         <div class="w-12 h-12 border-4 border-emerald-400 border-t-transparent rounded-full animate-spin mb-4"></div>
         <p id="loader-text" class="font-black text-[10px] uppercase tracking-[0.3em] opacity-50 text-center">Menghubungkan ke Pusat Data...</p>
@@ -34,8 +30,8 @@
                     <i class="fas fa-microchip text-slate-900 text-3xl"></i>
                 </div>
                 <div>
-                    <h1 class="text-2xl lg:text-3xl font-extrabold tracking-tight">Ultra Control <span class="text-emerald-400">v6.0</span></h1>
-                    <p class="text-slate-400 text-[10px] font-black uppercase tracking-widest mt-1">Sistem Monitoring Presisi Laboratorium</p>
+                    <h1 class="text-2xl lg:text-3xl font-extrabold tracking-tight">Master Control <span class="text-emerald-400">v6.5</span></h1>
+                    <p class="text-slate-400 text-[10px] font-black uppercase tracking-widest mt-1">Trimming Mean + Pure Polynomial Correction</p>
                 </div>
             </div>
 
@@ -50,7 +46,7 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
             
-            <!-- SIDEBAR: CALIBRATION -->
+            <!-- SIDEBAR: POLYNOMIAL ONLY -->
             <aside class="space-y-6">
                 <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 border-t-8 border-emerald-400">
                     <div class="flex items-center gap-2 mb-5 border-b border-slate-100 pb-3">
@@ -61,33 +57,25 @@
                     <div class="space-y-3">
                         <div>
                             <label class="text-[9px] font-black text-slate-400 uppercase block mb-1">Koefisien A (poly_a)</label>
-                            <input type="number" id="poly-a" step="0.000001" value="-0.0413" class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl p-3 font-mono text-xs font-bold focus:border-emerald-400 outline-none">
+                            <input type="number" id="poly-a" step="0.000001" value="-0.003462" class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl p-3 font-mono text-xs font-bold focus:border-emerald-400 outline-none">
                         </div>
                         <div>
                             <label class="text-[9px] font-black text-slate-400 uppercase block mb-1">Koefisien B (poly_b)</label>
-                            <input type="number" id="poly-b" step="0.0001" value="1.0512" class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl p-3 font-mono text-xs font-bold focus:border-emerald-400 outline-none">
+                            <input type="number" id="poly-b" step="0.0001" value="-3.2215" class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl p-3 font-mono text-xs font-bold focus:border-emerald-400 outline-none">
                         </div>
                         <div>
                             <label class="text-[9px] font-black text-slate-400 uppercase block mb-1">Koefisien C (poly_c)</label>
-                            <input type="number" id="poly-c" step="0.001" value="0.4496" class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl p-3 font-mono text-xs font-bold focus:border-emerald-400 outline-none">
+                            <input type="number" id="poly-c" step="0.001" value="-1237.8" class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl p-3 font-mono text-xs font-bold focus:border-emerald-400 outline-none">
                         </div>
-                        <div class="pt-4 border-t border-slate-100 mt-4">
-                            <label class="text-[9px] font-black text-slate-400 uppercase block mb-1">Linear Gain (m)</label>
-                            <input type="number" id="input-m" step="0.0001" value="1" class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl p-3 font-mono text-xs font-bold focus:border-emerald-400 outline-none">
-                        </div>
-                        <div>
-                            <label class="text-[9px] font-black text-slate-400 uppercase block mb-1">Linear Offset (c)</label>
-                            <input type="number" id="input-c" step="0.1" value="0" class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl p-3 font-mono text-xs font-bold focus:border-emerald-400 outline-none">
-                        </div>
-                        <button id="btn-save-all" class="w-full bg-slate-900 text-white rounded-2xl py-4 text-[10px] font-black uppercase tracking-[0.2em] hover:bg-emerald-500 transition-all active:scale-95 shadow-lg mt-4">
-                            Update Semua Parameter
+                        <button id="btn-save-all" class="w-full bg-slate-900 text-white rounded-2xl py-4 text-[10px] font-black uppercase tracking-[0.2em] hover:bg-emerald-500 transition-all shadow-lg mt-4">
+                            Update Parameter
                         </button>
                     </div>
                 </div>
 
                 <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200">
-                    <button id="btn-export" class="w-full bg-emerald-500 text-slate-900 rounded-2xl py-4 text-[10px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-2 hover:bg-emerald-400 transition-all active:scale-95">
-                        <i class="fas fa-file-csv"></i> Ekspor Data Riset
+                    <button id="btn-export" class="w-full bg-emerald-500 text-slate-900 rounded-2xl py-4 text-[10px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-2 hover:bg-emerald-400 transition-all active:scale-95 shadow-xl">
+                        <i class="fas fa-file-csv"></i> Ekspor Data (.CSV)
                     </button>
                 </div>
             </aside>
@@ -101,8 +89,8 @@
                                 <i class="fas fa-database text-emerald-600 text-xl"></i>
                             </div>
                             <div>
-                                <h3 class="font-black text-slate-800 text-sm uppercase tracking-widest leading-none">Log Telemetri Real-time</h3>
-                                <p class="text-[9px] text-slate-400 font-bold uppercase mt-1">Z-Score filtering Aktif</p>
+                                <h3 class="font-black text-slate-800 text-sm uppercase tracking-widest leading-none">Log Data Terkini</h3>
+                                <p class="text-[9px] text-slate-400 font-bold uppercase mt-1">Trimming Mean v4.5 Aktif</p>
                             </div>
                         </div>
                         <span id="data-counter" class="text-[10px] font-black bg-slate-900 text-emerald-400 px-4 py-2 rounded-xl uppercase tracking-tighter shadow-inner">0 Data Log</span>
@@ -113,10 +101,11 @@
                             <thead class="bg-slate-50 text-[10px] uppercase font-black text-slate-400 border-b border-slate-100 sticky top-0 z-10">
                                 <tr>
                                     <th class="px-6 py-5">Waktu Lokal</th>
-                                    <th class="px-6 py-5">Identitas BU / Fase</th>
-                                    <th class="px-6 py-5 text-center">On Potential (Avg)</th>
-                                    <th class="px-6 py-5 text-center">Final Potential (Avg)</th>
-                                    <th class="px-6 py-5 text-center">Stability (Diff)</th>
+                                    <th class="px-6 py-5">Identitas BU</th>
+                                    <th class="px-6 py-5 text-center">Sample 1</th>
+                                    <th class="px-6 py-5 text-center">Sample 2</th>
+                                    <th class="px-6 py-5 text-center">Final Avg</th>
+                                    <th class="px-6 py-5 text-center">Stability</th>
                                 </tr>
                             </thead>
                             <tbody id="table-body" class="divide-y divide-slate-100 font-medium">
@@ -129,12 +118,11 @@
                         </div>
                     </div>
 
-                    <!-- PAGINATION -->
                     <div class="p-6 bg-slate-50 border-t border-slate-100 flex justify-between items-center">
                         <p id="page-indicator" class="text-[10px] text-slate-400 font-black uppercase tracking-widest">Halaman 1 dari 1</p>
                         <div class="flex gap-3">
-                            <button id="prev-page" class="w-12 h-12 rounded-2xl bg-white border-2 border-slate-100 hover:border-emerald-400 hover:text-emerald-500 disabled:opacity-30 transition-all flex items-center justify-center shadow-sm"><i class="fas fa-chevron-left"></i></button>
-                            <button id="next-page" class="w-12 h-12 rounded-2xl bg-white border-2 border-slate-100 hover:border-emerald-400 hover:text-emerald-500 disabled:opacity-30 transition-all flex items-center justify-center shadow-sm"><i class="fas fa-chevron-right"></i></button>
+                            <button id="prev-page" class="w-12 h-12 rounded-2xl bg-white border-2 border-slate-100 hover:border-emerald-400 hover:text-emerald-500 disabled:opacity-30 flex items-center justify-center shadow-sm transition-all"><i class="fas fa-chevron-left"></i></button>
+                            <button id="next-page" class="w-12 h-12 rounded-2xl bg-white border-2 border-slate-100 hover:border-emerald-400 hover:text-emerald-500 disabled:opacity-30 flex items-center justify-center shadow-sm transition-all"><i class="fas fa-chevron-right"></i></button>
                         </div>
                     </div>
                 </div>
@@ -142,61 +130,41 @@
         </div>
     </div>
 
-    <!-- FIREBASE MODULAR SDK -->
+    <!-- FIREBASE MODULES -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
 
-        // FALLBACK CONFIG
-        let firebaseConfig;
-        try {
-            firebaseConfig = typeof __firebase_config !== 'undefined' ? JSON.parse(__firebase_config) : {
-                apiKey: "AIzaSyA_tdRuWtUshubvm-lx2Et8OfB771wI9iU",
-                authDomain: "korosi-iot.firebaseapp.com",
-                databaseURL: "https://korosi-iot-default-rtdb.asia-southeast1.firebasedatabase.app",
-                projectId: "korosi-iot",
-                storageBucket: "korosi-iot.firebasestorage.app",
-                messagingSenderId: "703319558184",
-                appId: "1:703319558184:web:4882df38c58cc74f9e8d1d"
-            };
-        } catch (e) {
-            console.error("Config Parsing Error:", e);
-        }
+        const firebaseConfig = {
+            apiKey: "AIzaSyA_tdRuWtUshubvm-lx2Et8OfB771wI9iU",
+            authDomain: "korosi-iot.firebaseapp.com",
+            databaseURL: "https://korosi-iot-default-rtdb.asia-southeast1.firebasedatabase.app",
+            projectId: "korosi-iot",
+            storageBucket: "korosi-iot.firebasestorage.app",
+            messagingSenderId: "703319558184",
+            appId: "1:703319558184:web:4882df38c58cc74f9e8d1d"
+        };
         
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getDatabase(app);
-        const appIdClean = "korosi-iot";
-        const basePath = `artifacts/${appIdClean}/public/data`;
+        const basePath = `artifacts/korosi-iot/public/data`;
 
         let allLogs = [];
         let currentPage = 1;
         const rowsPerPage = 10;
 
-        // AUTH INITIALIZATION WITH FAILOVER
         const initAuth = async () => {
             const loaderText = document.getElementById('loader-text');
-            const retryBtn = document.getElementById('btn-retry');
-            
             try {
-                // Rule 3: Always check for custom token FIRST
                 if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    try {
-                        await signInWithCustomToken(auth, __initial_auth_token);
-                    } catch (customAuthError) {
-                        // Fallback to anonymous if custom token fails (mismatch or expired)
-                        console.warn("Custom token failed, falling back to anonymous login:", customAuthError.message);
-                        await signInAnonymously(auth);
-                    }
-                } else {
-                    await signInAnonymously(auth);
-                }
+                    try { await signInWithCustomToken(auth, __initial_auth_token); } 
+                    catch (e) { await signInAnonymously(auth); }
+                } else { await signInAnonymously(auth); }
             } catch (err) { 
-                console.error("Critical Auth Failure:", err);
-                loaderText.innerText = "Gagal Terhubung ke Firebase. Silakan Muat Ulang.";
-                loaderText.classList.add('text-rose-500');
-                retryBtn.classList.remove('hidden');
+                console.error(err);
+                loaderText.innerText = "Gagal Terhubung.";
             }
         };
 
@@ -209,7 +177,6 @@
         });
 
         const startDashboard = () => {
-            // Global Anode Status
             onValue(ref(db, `${basePath}/status_global`), (snap) => {
                 const data = snap.val();
                 if (data) {
@@ -217,7 +184,6 @@
                     const textEl = document.getElementById('global-status-text');
                     const wrapEl = document.getElementById('status-wrapper');
                     const iconEl = document.getElementById('status-icon');
-                    
                     textEl.innerText = status;
                     if (status === 'PROTECTED') {
                         textEl.className = "text-xl font-black leading-none text-emerald-400";
@@ -231,19 +197,15 @@
                 }
             });
 
-            // Remote Calibration Params
             onValue(ref(db, `${basePath}/kalibrasi`), (snap) => {
                 const data = snap.val();
                 if (data) {
-                    document.getElementById('poly-a').value = data.poly_a || -0.0413;
-                    document.getElementById('poly-b').value = data.poly_b || 1.0512;
-                    document.getElementById('poly-c').value = data.poly_c || 0.4496;
-                    document.getElementById('input-m').value = data.m || 1;
-                    document.getElementById('input-c').value = data.c || 0;
+                    document.getElementById('poly-a').value = data.poly_a || -0.003462;
+                    document.getElementById('poly-b').value = data.poly_b || -3.2215;
+                    document.getElementById('poly-c').value = data.poly_c || -1237.8;
                 }
             });
 
-            // Monitoring Logs
             onValue(ref(db, `${basePath}/hasil_monitoring_final`), (snap) => {
                 const data = snap.val();
                 if (data) {
@@ -258,34 +220,30 @@
 
         const renderLogs = () => {
             const tbody = document.getElementById('table-body');
-            const counter = document.getElementById('data-counter');
             tbody.innerHTML = "";
-            counter.innerText = `${allLogs.length} Data Log`;
-
+            document.getElementById('data-counter').innerText = `${allLogs.length} Entri`;
             const totalPages = Math.ceil(allLogs.length / rowsPerPage);
             const start = (currentPage - 1) * rowsPerPage;
-            const end = start + rowsPerPage;
-            const pageData = allLogs.slice(start, end);
+            const pageData = allLogs.slice(start, start + rowsPerPage);
 
             pageData.forEach(log => {
                 const row = document.createElement('tr');
                 row.className = "hover:bg-slate-50/80 transition-colors group";
-                
                 const diff = Math.abs(log.v_off_1 - log.v_off_2).toFixed(1);
-                const onPot = log.fase === 'PH1' ? `${Math.round(log.v_on_avg)} mV` : '-';
                 
                 row.innerHTML = `
-                    <td class="px-6 py-5 text-slate-400 tabular-nums text-[11px] font-mono">${log.waktu_lokal || '-'}</td>
+                    <td class="px-6 py-5 text-slate-400 font-mono text-[11px]">${log.waktu_lokal || '-'}</td>
                     <td class="px-6 py-5">
-                        <div class="font-extrabold text-slate-800">${log.bu || 'NA'} <span class="text-slate-400 font-bold text-[9px] bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">${log.tp || 'T1/P1'}</span></div>
-                        <div class="text-[9px] font-black uppercase text-emerald-500 tracking-tighter">${log.fase || 'STD'}</div>
+                        <div class="font-extrabold text-slate-900">${log.bu} <span class="text-slate-400 font-bold text-[9px] bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">${log.tp}</span></div>
+                        <div class="text-[9px] font-black uppercase text-emerald-500">${log.fase}</div>
                     </td>
-                    <td class="px-6 py-5 text-center font-mono text-slate-400 text-xs">${onPot}</td>
+                    <td class="px-6 py-5 text-center font-mono text-slate-400 text-xs">${Math.round(log.v_off_1)} mV</td>
+                    <td class="px-6 py-5 text-center font-mono text-slate-400 text-xs">${Math.round(log.v_off_2)} mV</td>
                     <td class="px-6 py-5 text-center">
                         <span class="font-mono font-black text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-xl border border-emerald-100 shadow-sm">${Math.round(log.v_off_avg)} mV</span>
                     </td>
                     <td class="px-6 py-5 text-center">
-                        <span class="text-[10px] font-black ${diff > 5 ? 'text-rose-500 bg-rose-50 border-rose-200' : 'text-slate-400 bg-slate-50 border-slate-200'} px-2 py-1 rounded-full border opacity-80">
+                        <span class="text-[10px] font-black ${diff > 10 ? 'text-rose-500 bg-rose-50 border-rose-200' : 'text-slate-400 bg-slate-50 border-slate-200'} px-2 py-1 rounded-full border opacity-80">
                             ± ${diff} mV
                         </span>
                     </td>
@@ -298,40 +256,31 @@
             document.getElementById('next-page').disabled = currentPage >= totalPages;
         };
 
-        // BUTTON ACTIONS
         document.getElementById('btn-save-all').onclick = () => {
             const data = {
                 poly_a: parseFloat(document.getElementById('poly-a').value) || 0,
                 poly_b: parseFloat(document.getElementById('poly-b').value) || 1,
-                poly_c: parseFloat(document.getElementById('poly-c').value) || 0,
-                m: parseFloat(document.getElementById('input-m').value) || 1,
-                c: parseFloat(document.getElementById('input-c').value) || 0
+                poly_c: parseFloat(document.getElementById('poly-c').value) || 0
             };
-            set(ref(db, `${basePath}/kalibrasi`), data)
-                .then(() => alert("Parameter Kalibrasi Polinomial & Linear Berhasil Disinkronisasi!"))
-                .catch(err => alert("Gagal Simpan: " + err.message));
+            set(ref(db, `${basePath}/kalibrasi`), data).then(() => alert("Koreksi Polinomial Berhasil Diperbarui!"));
         };
 
         document.getElementById('btn-export').onclick = () => {
-            if (allLogs.length === 0) return alert("Data kosong");
-            let csv = "Timestamp,BU,T/P,Fase,On_Avg(mV),Off_Avg(mV),Stability_Diff,m,c,poly_a,poly_b,poly_c,Suhu\n";
+            let csv = "Timestamp,BU,T/P,Fase,V1,V2,Avg,Diff,poly_a,poly_b,poly_c\n";
             allLogs.forEach(d => {
                 const diff = Math.abs(d.v_off_1 - d.v_off_2).toFixed(2);
-                csv += `${d.waktu_lokal},${d.bu},${d.tp},${d.fase},${d.v_on_avg || 0},${d.v_off_avg},${diff},${d.cal_m},${d.cal_c},${d.poly_a},${d.poly_b},${d.poly_c},${d.suhu}\n`;
+                csv += `${d.waktu_lokal},${d.bu},${d.tp},${d.fase},${d.v_off_1},${d.v_off_2},${d.v_off_avg},${diff},${d.poly_a},${d.poly_b},${d.poly_c}\n`;
             });
-            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const blob = new Blob([csv], { type: 'text/csv' });
             const link = document.createElement("a");
             link.href = URL.createObjectURL(blob);
-            link.download = `SACP_Ultra_Logs_${new Date().toISOString().split('T')[0]}.csv`;
+            link.download = `SACP_Polynomial_Only_${new Date().toISOString().split('T')[0]}.csv`;
             link.click();
         };
 
         document.getElementById('prev-page').onclick = () => { if(currentPage > 1) { currentPage--; renderLogs(); } };
         document.getElementById('next-page').onclick = () => { if(currentPage < Math.ceil(allLogs.length / rowsPerPage)) { currentPage++; renderLogs(); } };
-        document.getElementById('btn-retry').onclick = () => window.location.reload();
-
         initAuth();
     </script>
 </body>
 </html>
-
