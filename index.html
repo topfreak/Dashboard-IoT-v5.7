@@ -3,97 +3,110 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ultra Dashboard v6.5</title>
+    <title>Hybrid Dashboard v7.3</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
-        .mint-gradient { background: linear-gradient(135deg, #56e39f 0%, #59c9a5 100%); }
-        .violet-card { background-color: #2a1f2d; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f1f5f9; }
+        .glass-card { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); }
+        .emerald-gradient { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
     </style>
 </head>
 <body class="text-slate-800">
 
+    <!-- Preloader -->
     <div id="loader" class="fixed inset-0 z-[99] bg-slate-900 flex flex-col items-center justify-center text-white transition-opacity duration-500">
         <div class="w-12 h-12 border-4 border-emerald-400 border-t-transparent rounded-full animate-spin mb-4"></div>
-        <p id="loader-text" class="font-black text-[10px] uppercase tracking-[0.3em] opacity-50 text-center">Menghubungkan ke Pusat Data...</p>
-        <button id="btn-retry" class="hidden mt-6 px-6 py-2 bg-rose-500 rounded-lg text-xs font-bold uppercase tracking-widest">Coba Lagi</button>
+        <p class="font-black text-[10px] uppercase tracking-[0.3em] opacity-50">Sinkronisasi Hybrid v7.3...</p>
     </div>
 
-    <div class="max-w-7xl mx-auto px-4 py-6 lg:px-8 lg:py-8 space-y-6">
+    <div class="max-w-7xl mx-auto px-4 py-6 lg:px-8 space-y-6">
         
         <!-- HEADER -->
-        <header class="violet-card text-white rounded-3xl p-6 lg:p-8 shadow-2xl flex flex-col md:flex-row justify-between items-center border-b-8 border-emerald-400">
+        <header class="bg-slate-900 text-white rounded-[2rem] p-6 lg:p-8 shadow-2xl flex flex-col md:flex-row justify-between items-center border-b-4 border-emerald-400">
             <div class="flex items-center gap-5">
-                <div class="mint-gradient p-4 rounded-2xl shadow-lg">
-                    <i class="fas fa-microchip text-slate-900 text-3xl"></i>
+                <div class="emerald-gradient p-4 rounded-2xl shadow-lg">
+                    <i class="fas fa-wave-square text-white text-3xl"></i>
                 </div>
                 <div>
-                    <h1 class="text-2xl lg:text-3xl font-extrabold tracking-tight">Master Control <span class="text-emerald-400">v6.5</span></h1>
-                    <p class="text-slate-400 text-[10px] font-black uppercase tracking-widest mt-1">Trimming Mean + Pure Polynomial Correction</p>
+                    <h1 class="text-2xl font-extrabold tracking-tight">Hybrid <span class="text-emerald-400">v7.3</span></h1>
+                    <p class="text-slate-400 text-[10px] font-black uppercase tracking-widest mt-1">Filtering EMA + Polinomial Orde 2</p>
                 </div>
             </div>
 
-            <div id="status-wrapper" class="mt-6 md:mt-0 px-8 py-4 rounded-2xl border-2 border-slate-700 bg-white/5 flex items-center gap-4 transition-all duration-500">
+            <div id="status-wrapper" class="mt-6 md:mt-0 px-6 py-3 rounded-2xl border border-slate-700 bg-white/5 flex items-center gap-4">
                 <div class="text-right">
-                    <p class="text-[9px] uppercase font-black opacity-40 leading-none mb-1">Status Proteksi</p>
-                    <p id="global-status-text" class="text-xl font-black leading-none text-slate-400">CONNECTING</p>
+                    <p class="text-[9px] uppercase font-black opacity-40 leading-none mb-1">Status Global</p>
+                    <p id="global-status-text" class="text-lg font-black leading-none text-emerald-400">CONNECTED</p>
                 </div>
-                <i id="status-icon" class="fas fa-shield-halved text-2xl text-slate-600"></i>
+                <div class="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center">
+                    <i class="fas fa-shield-check text-emerald-400"></i>
+                </div>
             </div>
         </header>
 
         <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
             
-            <!-- SIDEBAR: POLYNOMIAL ONLY -->
+            <!-- LEFT COLUMN: CALIBRATION -->
             <aside class="space-y-6">
-                <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200 border-t-8 border-emerald-400">
+                <!-- PANEL PARAMETER -->
+                <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200">
                     <div class="flex items-center gap-2 mb-5 border-b border-slate-100 pb-3">
-                        <i class="fas fa-chart-line text-emerald-500"></i>
-                        <h3 class="font-bold text-xs uppercase tracking-widest text-slate-500">Koreksi Polinomial</h3>
+                        <i class="fas fa-sliders text-emerald-500"></i>
+                        <h3 class="font-bold text-xs uppercase tracking-widest">Parameter Kalibrasi</h3>
                     </div>
-                    <p class="text-[10px] text-slate-400 mb-4 font-bold italic text-center">Formula: y = ax² + bx + c</p>
-                    <div class="space-y-3">
+                    <div class="space-y-4">
                         <div>
-                            <label class="text-[9px] font-black text-slate-400 uppercase block mb-1">Koefisien A (poly_a)</label>
-                            <input type="number" id="poly-a" step="0.000001" value="-0.003462" class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl p-3 font-mono text-xs font-bold focus:border-emerald-400 outline-none">
+                            <label class="text-[10px] font-black text-slate-400 uppercase block mb-1">Koefisien A (x²)</label>
+                            <input type="number" id="poly-a" step="0.000001" class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl p-3 font-mono text-xs font-bold focus:border-emerald-400 outline-none transition-all">
                         </div>
                         <div>
-                            <label class="text-[9px] font-black text-slate-400 uppercase block mb-1">Koefisien B (poly_b)</label>
-                            <input type="number" id="poly-b" step="0.0001" value="-3.2215" class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl p-3 font-mono text-xs font-bold focus:border-emerald-400 outline-none">
+                            <label class="text-[10px] font-black text-slate-400 uppercase block mb-1">Koefisien B (x)</label>
+                            <input type="number" id="poly-b" step="0.0001" class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl p-3 font-mono text-xs font-bold focus:border-emerald-400 outline-none transition-all">
                         </div>
                         <div>
-                            <label class="text-[9px] font-black text-slate-400 uppercase block mb-1">Koefisien C (poly_c)</label>
-                            <input type="number" id="poly-c" step="0.001" value="-1237.8" class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl p-3 font-mono text-xs font-bold focus:border-emerald-400 outline-none">
+                            <label class="text-[10px] font-black text-slate-400 uppercase block mb-1">Koefisien C (Offset)</label>
+                            <input type="number" id="poly-c" step="0.1" class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl p-3 font-mono text-xs font-bold focus:border-emerald-400 outline-none transition-all">
                         </div>
-                        <button id="btn-save-all" class="w-full bg-slate-900 text-white rounded-2xl py-4 text-[10px] font-black uppercase tracking-[0.2em] hover:bg-emerald-500 transition-all shadow-lg mt-4">
-                            Update Parameter
+                        <button id="btn-save-cal" class="w-full bg-slate-900 text-white rounded-2xl py-4 text-[10px] font-black uppercase tracking-[0.2em] hover:bg-emerald-600 transition-all shadow-lg active:scale-95">
+                            Simpan ke Database
                         </button>
                     </div>
                 </div>
 
-                <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200">
-                    <button id="btn-export" class="w-full bg-emerald-500 text-slate-900 rounded-2xl py-4 text-[10px] font-black uppercase tracking-[0.2em] flex items-center justify-center gap-2 hover:bg-emerald-400 transition-all active:scale-95 shadow-xl">
-                        <i class="fas fa-file-csv"></i> Ekspor Data (.CSV)
-                    </button>
+                <!-- HELPER: TWO-STAGE OFFSET -->
+                <div class="bg-slate-900 text-white rounded-3xl p-6 shadow-xl border-l-8 border-emerald-400">
+                    <h3 class="font-bold text-[10px] uppercase tracking-widest text-emerald-400 mb-4">Stage 2: Offset Helper</h3>
+                    <div class="space-y-3">
+                        <input type="number" id="manual-val" placeholder="Nilai Multimeter (mV)" class="w-full bg-white/10 border border-white/20 rounded-xl p-3 text-xs outline-none focus:border-emerald-400">
+                        <input type="number" id="iot-val" placeholder="Nilai Dashboard (mV)" class="w-full bg-white/10 border border-white/20 rounded-xl p-3 text-xs outline-none focus:border-emerald-400">
+                        <button onclick="calculateOffset()" class="w-full bg-emerald-500 text-slate-900 font-bold py-2 rounded-lg text-[10px] uppercase">Hitung Selisih</button>
+                        <p id="offset-result" class="text-[9px] text-slate-400 italic text-center mt-2"></p>
+                    </div>
                 </div>
             </aside>
 
-            <!-- MAIN LOG TABLE -->
-            <main class="lg:col-span-3">
-                <div class="bg-white rounded-[2.5rem] shadow-sm border border-slate-200 overflow-hidden flex flex-col h-full min-h-[600px]">
+            <!-- RIGHT COLUMN: LOG DATA -->
+            <main class="lg:col-span-3 space-y-6">
+                <!-- TABLE SECTION -->
+                <div class="bg-white rounded-[2.5rem] shadow-sm border border-slate-200 overflow-hidden flex flex-col min-h-[600px]">
                     <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
                         <div class="flex items-center gap-3">
-                            <div class="w-12 h-12 rounded-2xl bg-emerald-100 flex items-center justify-center">
-                                <i class="fas fa-database text-emerald-600 text-xl"></i>
+                            <div class="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center">
+                                <i class="fas fa-database text-emerald-600"></i>
                             </div>
                             <div>
-                                <h3 class="font-black text-slate-800 text-sm uppercase tracking-widest leading-none">Log Data Terkini</h3>
-                                <p class="text-[9px] text-slate-400 font-bold uppercase mt-1">Trimming Mean v4.5 Aktif</p>
+                                <h3 class="font-black text-slate-800 text-xs uppercase tracking-widest leading-none">Log Data Hibrid</h3>
+                                <p class="text-[9px] text-slate-400 font-bold uppercase mt-1">Status: Sinkronisasi 10 Detik</p>
                             </div>
                         </div>
-                        <span id="data-counter" class="text-[10px] font-black bg-slate-900 text-emerald-400 px-4 py-2 rounded-xl uppercase tracking-tighter shadow-inner">0 Data Log</span>
+                        <button id="btn-export" class="bg-emerald-100 text-emerald-700 px-4 py-2 rounded-xl text-[10px] font-black uppercase hover:bg-emerald-200 transition-all">
+                            <i class="fas fa-file-csv mr-1"></i> Ekspor CSV
+                        </button>
                     </div>
 
                     <div class="overflow-x-auto flex-grow custom-scrollbar">
@@ -102,27 +115,23 @@
                                 <tr>
                                     <th class="px-6 py-5">Waktu Lokal</th>
                                     <th class="px-6 py-5">Identitas BU</th>
-                                    <th class="px-6 py-5 text-center">Sample 1</th>
-                                    <th class="px-6 py-5 text-center">Sample 2</th>
-                                    <th class="px-6 py-5 text-center">Final Avg</th>
-                                    <th class="px-6 py-5 text-center">Stability</th>
+                                    <th class="px-6 py-5 text-center">Fase</th>
+                                    <th class="px-6 py-5 text-center">Final Potential (EMA)</th>
+                                    <th class="px-6 py-5 text-center">Arus (mA)</th>
                                 </tr>
                             </thead>
                             <tbody id="table-body" class="divide-y divide-slate-100 font-medium">
-                                <!-- Dynamic Rows -->
+                                <!-- Data akan masuk di sini -->
                             </tbody>
                         </table>
-                        <div id="empty-state" class="hidden flex flex-col items-center justify-center py-32 text-slate-300">
-                            <i class="fas fa-wifi text-6xl mb-4 opacity-10 animate-pulse"></i>
-                            <p class="font-black uppercase tracking-[0.3em] text-[10px]">Menunggu Transmisi Sensor...</p>
-                        </div>
                     </div>
 
-                    <div class="p-6 bg-slate-50 border-t border-slate-100 flex justify-between items-center">
-                        <p id="page-indicator" class="text-[10px] text-slate-400 font-black uppercase tracking-widest">Halaman 1 dari 1</p>
-                        <div class="flex gap-3">
-                            <button id="prev-page" class="w-12 h-12 rounded-2xl bg-white border-2 border-slate-100 hover:border-emerald-400 hover:text-emerald-500 disabled:opacity-30 flex items-center justify-center shadow-sm transition-all"><i class="fas fa-chevron-left"></i></button>
-                            <button id="next-page" class="w-12 h-12 rounded-2xl bg-white border-2 border-slate-100 hover:border-emerald-400 hover:text-emerald-500 disabled:opacity-30 flex items-center justify-center shadow-sm transition-all"><i class="fas fa-chevron-right"></i></button>
+                    <!-- Pagination -->
+                    <div class="p-4 bg-slate-50 border-t border-slate-100 flex justify-between items-center">
+                        <p id="page-info" class="text-[10px] text-slate-400 font-black uppercase tracking-widest">Halaman 1</p>
+                        <div class="flex gap-2">
+                            <button id="prev-page" class="p-3 rounded-xl bg-white border border-slate-200 hover:border-emerald-400 disabled:opacity-30"><i class="fas fa-chevron-left text-xs"></i></button>
+                            <button id="next-page" class="p-3 rounded-xl bg-white border border-slate-200 hover:border-emerald-400 disabled:opacity-30"><i class="fas fa-chevron-right text-xs"></i></button>
                         </div>
                     </div>
                 </div>
@@ -130,20 +139,16 @@
         </div>
     </div>
 
-    <!-- FIREBASE MODULES -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
         import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyA_tdRuWtUshubvm-lx2Et8OfB771wI9iU",
             authDomain: "korosi-iot.firebaseapp.com",
             databaseURL: "https://korosi-iot-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "korosi-iot",
-            storageBucket: "korosi-iot.firebasestorage.app",
-            messagingSenderId: "703319558184",
-            appId: "1:703319558184:web:4882df38c58cc74f9e8d1d"
+            projectId: "korosi-iot"
         };
         
         const app = initializeApp(firebaseConfig);
@@ -153,134 +158,107 @@
 
         let allLogs = [];
         let currentPage = 1;
-        const rowsPerPage = 10;
+        const rowsPerPage = 12;
 
-        const initAuth = async () => {
-            const loaderText = document.getElementById('loader-text');
-            try {
-                if (typeof __initial_auth_token !== 'undefined' && __initial_auth_token) {
-                    try { await signInWithCustomToken(auth, __initial_auth_token); } 
-                    catch (e) { await signInAnonymously(auth); }
-                } else { await signInAnonymously(auth); }
-            } catch (err) { 
-                console.error(err);
-                loaderText.innerText = "Gagal Terhubung.";
-            }
-        };
-
+        // Autentikasi & Inisialisasi
         onAuthStateChanged(auth, (user) => {
             if (user) {
                 document.getElementById('loader').style.opacity = '0';
                 setTimeout(() => document.getElementById('loader').classList.add('hidden'), 500);
-                startDashboard();
+                loadDashboardData();
+            } else {
+                signInAnonymously(auth);
             }
         });
 
-        const startDashboard = () => {
-            onValue(ref(db, `${basePath}/status_global`), (snap) => {
-                const data = snap.val();
-                if (data) {
-                    const status = data.status || 'OFF';
-                    const textEl = document.getElementById('global-status-text');
-                    const wrapEl = document.getElementById('status-wrapper');
-                    const iconEl = document.getElementById('status-icon');
-                    textEl.innerText = status;
-                    if (status === 'PROTECTED') {
-                        textEl.className = "text-xl font-black leading-none text-emerald-400";
-                        wrapEl.className = "mt-6 md:mt-0 px-8 py-4 rounded-2xl border-2 border-emerald-500/30 bg-emerald-500/5 flex items-center gap-4 transition-all";
-                        iconEl.className = "fas fa-shield-heart text-2xl text-emerald-400 animate-pulse";
-                    } else {
-                        textEl.className = "text-xl font-black leading-none text-rose-400";
-                        wrapEl.className = "mt-6 md:mt-0 px-8 py-4 rounded-2xl border-2 border-rose-500/30 bg-rose-500/5 flex items-center gap-4 transition-all";
-                        iconEl.className = "fas fa-shield-slash text-2xl text-rose-400";
-                    }
-                }
-            });
-
+        function loadDashboardData() {
+            // 1. Sinkronisasi Kalibrasi
             onValue(ref(db, `${basePath}/kalibrasi`), (snap) => {
                 const data = snap.val();
                 if (data) {
-                    document.getElementById('poly-a').value = data.poly_a || -0.003462;
-                    document.getElementById('poly-b').value = data.poly_b || -3.2215;
-                    document.getElementById('poly-c').value = data.poly_c || -1237.8;
+                    document.getElementById('poly-a').value = data.poly_a || 0;
+                    document.getElementById('poly-b').value = data.poly_b || 1;
+                    document.getElementById('poly-c').value = data.poly_c || 0;
                 }
             });
 
+            // 2. Monitoring Logs (v_off_avg adalah hasil EMA dari firmware)
             onValue(ref(db, `${basePath}/hasil_monitoring_final`), (snap) => {
                 const data = snap.val();
                 if (data) {
                     allLogs = Object.values(data).reverse();
-                    renderLogs();
-                    document.getElementById('empty-state').classList.add('hidden');
-                } else {
-                    document.getElementById('empty-state').classList.remove('hidden');
+                    renderTable();
                 }
             });
-        };
+        }
 
-        const renderLogs = () => {
+        function renderTable() {
             const tbody = document.getElementById('table-body');
             tbody.innerHTML = "";
-            document.getElementById('data-counter').innerText = `${allLogs.length} Entri`;
-            const totalPages = Math.ceil(allLogs.length / rowsPerPage);
             const start = (currentPage - 1) * rowsPerPage;
-            const pageData = allLogs.slice(start, start + rowsPerPage);
+            const pagedData = allLogs.slice(start, start + rowsPerPage);
 
-            pageData.forEach(log => {
-                const row = document.createElement('tr');
-                row.className = "hover:bg-slate-50/80 transition-colors group";
-                const diff = Math.abs(log.v_off_1 - log.v_off_2).toFixed(1);
-                
-                row.innerHTML = `
-                    <td class="px-6 py-5 text-slate-400 font-mono text-[11px]">${log.waktu_lokal || '-'}</td>
-                    <td class="px-6 py-5">
-                        <div class="font-extrabold text-slate-900">${log.bu} <span class="text-slate-400 font-bold text-[9px] bg-slate-100 px-1.5 py-0.5 rounded border border-slate-200">${log.tp}</span></div>
-                        <div class="text-[9px] font-black uppercase text-emerald-500">${log.fase}</div>
+            pagedData.forEach(log => {
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 transition-colors";
+                tr.innerHTML = `
+                    <td class="px-6 py-4 text-slate-400 font-mono text-[10px]">${log.waktu_lokal || '-'}</td>
+                    <td class="px-6 py-4">
+                        <div class="font-black text-slate-800 text-xs">${log.bu} <span class="text-[9px] text-slate-400 ml-1 font-bold">${log.tp}</span></div>
                     </td>
-                    <td class="px-6 py-5 text-center font-mono text-slate-400 text-xs">${Math.round(log.v_off_1)} mV</td>
-                    <td class="px-6 py-5 text-center font-mono text-slate-400 text-xs">${Math.round(log.v_off_2)} mV</td>
-                    <td class="px-6 py-5 text-center">
-                        <span class="font-mono font-black text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-xl border border-emerald-100 shadow-sm">${Math.round(log.v_off_avg)} mV</span>
+                    <td class="px-6 py-4 text-center">
+                        <span class="text-[9px] font-black px-2 py-1 rounded-full ${log.fase === 'PH1' ? 'bg-blue-100 text-blue-600' : 'bg-amber-100 text-amber-600'}">${log.fase}</span>
                     </td>
-                    <td class="px-6 py-5 text-center">
-                        <span class="text-[10px] font-black ${diff > 10 ? 'text-rose-500 bg-rose-50 border-rose-200' : 'text-slate-400 bg-slate-50 border-slate-200'} px-2 py-1 rounded-full border opacity-80">
-                            ± ${diff} mV
-                        </span>
+                    <td class="px-6 py-4 text-center">
+                        <span class="font-mono font-black text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-xl border border-emerald-100">${Math.round(log.v_off_avg)} mV</span>
                     </td>
+                    <td class="px-6 py-4 text-center font-mono text-slate-500 text-xs">${log.i_ma ? log.i_ma.toFixed(2) : '0.00'}</td>
                 `;
-                tbody.appendChild(row);
+                tbody.appendChild(tr);
             });
+            document.getElementById('page-info').innerText = `Halaman ${currentPage} dari ${Math.ceil(allLogs.length/rowsPerPage)}`;
+        }
 
-            document.getElementById('page-indicator').innerText = `Halaman ${currentPage} Dari ${totalPages || 1}`;
-            document.getElementById('prev-page').disabled = currentPage === 1;
-            document.getElementById('next-page').disabled = currentPage >= totalPages;
+        // Action: Simpan Kalibrasi
+        document.getElementById('btn-save-cal').onclick = () => {
+            const poly_a = parseFloat(document.getElementById('poly-a').value);
+            const poly_b = parseFloat(document.getElementById('poly-b').value);
+            const poly_c = parseFloat(document.getElementById('poly-c').value);
+
+            set(ref(db, `${basePath}/kalibrasi`), { poly_a, poly_b, poly_c })
+                .then(() => alert("Parameter Polinomial v7.3 Berhasil Diperbarui!"));
         };
 
-        document.getElementById('btn-save-all').onclick = () => {
-            const data = {
-                poly_a: parseFloat(document.getElementById('poly-a').value) || 0,
-                poly_b: parseFloat(document.getElementById('poly-b').value) || 1,
-                poly_c: parseFloat(document.getElementById('poly-c').value) || 0
-            };
-            set(ref(db, `${basePath}/kalibrasi`), data).then(() => alert("Koreksi Polinomial Berhasil Diperbarui!"));
+        // Helper: Kalkulasi Offset
+        window.calculateOffset = () => {
+            const manual = parseFloat(document.getElementById('manual-val').value);
+            const iot = parseFloat(document.getElementById('iot-val').value);
+            const polyC_current = parseFloat(document.getElementById('poly-c').value);
+            
+            if (!isNaN(manual) && !isNaN(iot)) {
+                const diff = manual - iot;
+                const newPolyC = polyC_current + diff;
+                document.getElementById('offset-result').innerHTML = `Selisih: <b>${diff.toFixed(1)} mV</b><br>Saran Poly_C Baru: <b>${newPolyC.toFixed(2)}</b>`;
+            }
         };
 
+        // Ekspor CSV
         document.getElementById('btn-export').onclick = () => {
-            let csv = "Timestamp,BU,T/P,Fase,V1,V2,Avg,Diff,poly_a,poly_b,poly_c\n";
+            let csv = "Timestamp,BU,T/P,Fase,Potential_EMA,Current_mA,Suhu,poly_a,poly_b,poly_c\n";
             allLogs.forEach(d => {
-                const diff = Math.abs(d.v_off_1 - d.v_off_2).toFixed(2);
-                csv += `${d.waktu_lokal},${d.bu},${d.tp},${d.fase},${d.v_off_1},${d.v_off_2},${d.v_off_avg},${diff},${d.poly_a},${d.poly_b},${d.poly_c}\n`;
+                csv += `${d.waktu_lokal},${d.bu},${d.tp},${d.fase},${d.v_off_avg},${d.i_ma},${d.suhu},${d.poly_a},${d.poly_b},${d.poly_c}\n`;
             });
             const blob = new Blob([csv], { type: 'text/csv' });
             const link = document.createElement("a");
             link.href = URL.createObjectURL(blob);
-            link.download = `SACP_Polynomial_Only_${new Date().toISOString().split('T')[0]}.csv`;
+            link.download = `SACP_v7.3_Hybrid_Report.csv`;
             link.click();
         };
 
-        document.getElementById('prev-page').onclick = () => { if(currentPage > 1) { currentPage--; renderLogs(); } };
-        document.getElementById('next-page').onclick = () => { if(currentPage < Math.ceil(allLogs.length / rowsPerPage)) { currentPage++; renderLogs(); } };
-        initAuth();
+        // Navigasi
+        document.getElementById('prev-page').onclick = () => { if(currentPage > 1) { currentPage--; renderTable(); } };
+        document.getElementById('next-page').onclick = () => { if(currentPage < Math.ceil(allLogs.length/rowsPerPage)) { currentPage++; renderTable(); } };
+
     </script>
 </body>
 </html>
