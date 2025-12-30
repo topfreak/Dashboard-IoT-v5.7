@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hybrid Dashboard v7.3</title>
+    <title>SACP Hybrid Dashboard v7.3</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -33,18 +33,33 @@
                     <i class="fas fa-wave-square text-white text-3xl"></i>
                 </div>
                 <div>
-                    <h1 class="text-2xl font-extrabold tracking-tight">Hybrid <span class="text-emerald-400">v7.3</span></h1>
+                    <h1 class="text-2xl font-extrabold tracking-tight">SACP Hybrid <span class="text-emerald-400">v7.3</span></h1>
                     <p class="text-slate-400 text-[10px] font-black uppercase tracking-widest mt-1">Filtering EMA + Polinomial Orde 2</p>
                 </div>
             </div>
 
-            <div id="status-wrapper" class="mt-6 md:mt-0 px-6 py-3 rounded-2xl border border-slate-700 bg-white/5 flex items-center gap-4">
-                <div class="text-right">
-                    <p class="text-[9px] uppercase font-black opacity-40 leading-none mb-1">Status Global</p>
-                    <p id="global-status-text" class="text-lg font-black leading-none text-emerald-400">CONNECTED</p>
+            <!-- STATUS INDICATORS -->
+            <div id="status-wrapper" class="mt-6 md:mt-0 flex flex-col sm:flex-row gap-4">
+                <!-- Anode Status -->
+                <div id="anode-badge" class="px-6 py-3 rounded-2xl border border-slate-700 bg-white/5 flex items-center gap-4 transition-all duration-500">
+                    <div class="text-right">
+                        <p class="text-[9px] uppercase font-black opacity-40 leading-none mb-1">Status Anoda</p>
+                        <p id="anode-status-text" class="text-lg font-black leading-none text-slate-500">WAITING</p>
+                    </div>
+                    <div id="anode-icon-bg" class="w-10 h-10 rounded-full bg-slate-500/20 flex items-center justify-center">
+                        <i id="anode-icon" class="fas fa-shield text-slate-500"></i>
+                    </div>
                 </div>
-                <div class="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center">
-                    <i class="fas fa-shield-check text-emerald-400"></i>
+
+                <!-- Connection Status -->
+                <div class="px-6 py-3 rounded-2xl border border-slate-700 bg-white/5 flex items-center gap-4">
+                    <div class="text-right">
+                        <p class="text-[9px] uppercase font-black opacity-40 leading-none mb-1">Dashboard</p>
+                        <p class="text-lg font-black leading-none text-emerald-400">ONLINE</p>
+                    </div>
+                    <div class="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center">
+                        <i class="fas fa-wifi text-emerald-400"></i>
+                    </div>
                 </div>
             </div>
         </header>
@@ -182,12 +197,36 @@
                 }
             });
 
-            // 2. Monitoring Logs (v_off_avg adalah hasil EMA dari firmware)
+            // 2. Monitoring Logs
             onValue(ref(db, `${basePath}/hasil_monitoring_final`), (snap) => {
                 const data = snap.val();
                 if (data) {
                     allLogs = Object.values(data).reverse();
                     renderTable();
+                }
+            });
+
+            // 3. Status Anoda Global
+            onValue(ref(db, `${basePath}/status_global`), (snap) => {
+                const data = snap.val();
+                const textEl = document.getElementById('anode-status-text');
+                const badgeEl = document.getElementById('anode-badge');
+                const iconEl = document.getElementById('anode-icon');
+                const iconBgEl = document.getElementById('anode-icon-bg');
+
+                if (data && data.status) {
+                    textEl.innerText = data.status;
+                    if (data.status === "PROTECTED") {
+                        textEl.className = "text-lg font-black leading-none text-emerald-400";
+                        badgeEl.className = "px-6 py-3 rounded-2xl border border-emerald-500/50 bg-emerald-500/10 flex items-center gap-4 transition-all shadow-lg shadow-emerald-500/10";
+                        iconEl.className = "fas fa-shield-check text-emerald-400 animate-pulse";
+                        iconBgEl.className = "w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center";
+                    } else {
+                        textEl.className = "text-lg font-black leading-none text-rose-400";
+                        badgeEl.className = "px-6 py-3 rounded-2xl border border-rose-500/50 bg-rose-500/10 flex items-center gap-4 transition-all shadow-lg shadow-rose-500/10";
+                        iconEl.className = "fas fa-shield-slash text-rose-400";
+                        iconBgEl.className = "w-10 h-10 rounded-full bg-rose-500/20 flex items-center justify-center";
+                    }
                 }
             });
         }
