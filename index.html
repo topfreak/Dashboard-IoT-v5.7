@@ -3,155 +3,164 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hybrid Dashboard v7.3</title>
+    <title>Dashboard v8.0</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f1f5f9; }
-        .glass-card { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); }
-        .emerald-gradient { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
+        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+        .chart-container { position: relative; height: 420px; width: 100%; }
+        .select-custom { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 0.75rem center; background-size: 1rem; }
+        .badge-ph1 { background-color: #dbeafe; color: #1e40af; }
+        .badge-ph2 { background-color: #fef3c7; color: #92400e; }
+        .badge-std { background-color: #f1f5f9; color: #475569; }
     </style>
 </head>
 <body class="text-slate-800">
 
-    <!-- Preloader -->
-    <div id="loader" class="fixed inset-0 z-[99] bg-slate-900 flex flex-col items-center justify-center text-white transition-opacity duration-500">
-        <div class="w-12 h-12 border-4 border-emerald-400 border-t-transparent rounded-full animate-spin mb-4"></div>
-        <p class="font-black text-[10px] uppercase tracking-[0.3em] opacity-50">Sinkronisasi Hybrid v7.3...</p>
-    </div>
-
-    <div class="max-w-7xl mx-auto px-4 py-6 lg:px-8 space-y-6">
-        
-        <!-- HEADER -->
-        <header class="bg-slate-900 text-white rounded-[2rem] p-6 lg:p-8 shadow-2xl flex flex-col md:flex-row justify-between items-center border-b-4 border-emerald-400">
-            <div class="flex items-center gap-5">
-                <div class="emerald-gradient p-4 rounded-2xl shadow-lg">
-                    <i class="fas fa-wave-square text-white text-3xl"></i>
+    <!-- Navbar -->
+    <nav class="sticky top-0 z-40 bg-slate-900 text-white border-b-4 border-emerald-500 shadow-xl">
+        <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-4">
+                <div class="bg-emerald-500 p-2 rounded-xl text-slate-900">
+                    <i class="fas fa-microchip text-xl"></i>
                 </div>
                 <div>
-                    <h1 class="text-2xl font-extrabold tracking-tight">Hybrid <span class="text-emerald-400">v7.3</span></h1>
-                    <p class="text-slate-400 text-[10px] font-black uppercase tracking-widest mt-1">Filtering EMA + Polinomial Orde 2</p>
+                    <h1 class="text-xl font-extrabold tracking-tight">Dashboard<span class="text-emerald-400">v8.0</span></h1>
+                    <p class="text-slate-400 text-[9px] font-black uppercase tracking-widest leading-none mt-1">Detailed Data Architecture Monitoring</p>
                 </div>
             </div>
 
-            <!-- STATUS INDICATORS -->
-            <div id="status-wrapper" class="mt-6 md:mt-0 flex flex-col sm:flex-row gap-4">
-                <!-- Anode Status -->
-                <div id="anode-badge" class="px-6 py-3 rounded-2xl border border-slate-700 bg-white/5 flex items-center gap-4 transition-all duration-500">
+            <div class="flex items-center gap-3">
+                <div id="anode-status-card" class="px-4 py-2 rounded-xl border border-slate-700 bg-white/5 flex items-center gap-3">
                     <div class="text-right">
-                        <p class="text-[9px] uppercase font-black opacity-40 leading-none mb-1">Status Anoda</p>
-                        <p id="anode-status-text" class="text-lg font-black leading-none text-slate-500">WAITING</p>
+                        <p class="text-[8px] uppercase font-black opacity-40 leading-none mb-1">Status Anoda</p>
+                        <p id="anode-status-text" class="text-xs font-black leading-none text-slate-400">SYNCING...</p>
                     </div>
-                    <div id="anode-icon-bg" class="w-10 h-10 rounded-full bg-slate-500/20 flex items-center justify-center">
-                        <i id="anode-icon" class="fas fa-shield text-slate-500"></i>
-                    </div>
+                    <i id="anode-icon" class="fas fa-circle-notch animate-spin text-slate-500 text-xs"></i>
                 </div>
-
-                <!-- Connection Status -->
-                <div class="px-6 py-3 rounded-2xl border border-slate-700 bg-white/5 flex items-center gap-4">
-                    <div class="text-right">
-                        <p class="text-[9px] uppercase font-black opacity-40 leading-none mb-1">Dashboard</p>
-                        <p class="text-lg font-black leading-none text-emerald-400">ONLINE</p>
-                    </div>
-                    <div class="w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center">
-                        <i class="fas fa-wifi text-emerald-400"></i>
-                    </div>
-                </div>
+                <button onclick="exportCSV()" class="bg-emerald-500 hover:bg-emerald-600 text-slate-900 px-4 py-2 rounded-xl text-[10px] font-black uppercase shadow-lg active:scale-95 transition-all">
+                    <i class="fas fa-file-export mr-1"></i> Export Data
+                </button>
             </div>
-        </header>
-
-        <div class="grid grid-cols-1 lg:grid-cols-4 gap-6">
-            
-            <!-- LEFT COLUMN: CALIBRATION -->
-            <aside class="space-y-6">
-                <!-- PANEL PARAMETER -->
-                <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200">
-                    <div class="flex items-center gap-2 mb-5 border-b border-slate-100 pb-3">
-                        <i class="fas fa-sliders text-emerald-500"></i>
-                        <h3 class="font-bold text-xs uppercase tracking-widest">Parameter Kalibrasi</h3>
-                    </div>
-                    <div class="space-y-4">
-                        <div>
-                            <label class="text-[10px] font-black text-slate-400 uppercase block mb-1">Koefisien A (x²)</label>
-                            <input type="number" id="poly-a" step="0.000001" class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl p-3 font-mono text-xs font-bold focus:border-emerald-400 outline-none transition-all">
-                        </div>
-                        <div>
-                            <label class="text-[10px] font-black text-slate-400 uppercase block mb-1">Koefisien B (x)</label>
-                            <input type="number" id="poly-b" step="0.0001" class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl p-3 font-mono text-xs font-bold focus:border-emerald-400 outline-none transition-all">
-                        </div>
-                        <div>
-                            <label class="text-[10px] font-black text-slate-400 uppercase block mb-1">Koefisien C (Offset)</label>
-                            <input type="number" id="poly-c" step="0.1" class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl p-3 font-mono text-xs font-bold focus:border-emerald-400 outline-none transition-all">
-                        </div>
-                        <button id="btn-save-cal" class="w-full bg-slate-900 text-white rounded-2xl py-4 text-[10px] font-black uppercase tracking-[0.2em] hover:bg-emerald-600 transition-all shadow-lg active:scale-95">
-                            Simpan ke Database
-                        </button>
-                    </div>
-                </div>
-
-                <!-- HELPER: TWO-STAGE OFFSET -->
-                <div class="bg-slate-900 text-white rounded-3xl p-6 shadow-xl border-l-8 border-emerald-400">
-                    <h3 class="font-bold text-[10px] uppercase tracking-widest text-emerald-400 mb-4">Stage 2: Offset Helper</h3>
-                    <div class="space-y-3">
-                        <input type="number" id="manual-val" placeholder="Nilai Multimeter (mV)" class="w-full bg-white/10 border border-white/20 rounded-xl p-3 text-xs outline-none focus:border-emerald-400">
-                        <input type="number" id="iot-val" placeholder="Nilai Dashboard (mV)" class="w-full bg-white/10 border border-white/20 rounded-xl p-3 text-xs outline-none focus:border-emerald-400">
-                        <button onclick="calculateOffset()" class="w-full bg-emerald-500 text-slate-900 font-bold py-2 rounded-lg text-[10px] uppercase">Hitung Selisih</button>
-                        <p id="offset-result" class="text-[9px] text-slate-400 italic text-center mt-2"></p>
-                    </div>
-                </div>
-            </aside>
-
-            <!-- RIGHT COLUMN: LOG DATA -->
-            <main class="lg:col-span-3 space-y-6">
-                <!-- TABLE SECTION -->
-                <div class="bg-white rounded-[2.5rem] shadow-sm border border-slate-200 overflow-hidden flex flex-col min-h-[600px]">
-                    <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center">
-                                <i class="fas fa-database text-emerald-600"></i>
-                            </div>
-                            <div>
-                                <h3 class="font-black text-slate-800 text-xs uppercase tracking-widest leading-none">Log Data Hibrid</h3>
-                                <p class="text-[9px] text-slate-400 font-bold uppercase mt-1">Status: Sinkronisasi 10 Detik</p>
-                            </div>
-                        </div>
-                        <button id="btn-export" class="bg-emerald-100 text-emerald-700 px-4 py-2 rounded-xl text-[10px] font-black uppercase hover:bg-emerald-200 transition-all">
-                            <i class="fas fa-file-csv mr-1"></i> Ekspor CSV
-                        </button>
-                    </div>
-
-                    <div class="overflow-x-auto flex-grow custom-scrollbar">
-                        <table class="w-full text-left text-sm">
-                            <thead class="bg-slate-50 text-[10px] uppercase font-black text-slate-400 border-b border-slate-100 sticky top-0 z-10">
-                                <tr>
-                                    <th class="px-6 py-5">Waktu Lokal</th>
-                                    <th class="px-6 py-5">Identitas BU</th>
-                                    <th class="px-6 py-5 text-center">Fase</th>
-                                    <th class="px-6 py-5 text-center">Final Potential (EMA)</th>
-                                    <th class="px-6 py-5 text-center">Arus (mA)</th>
-                                </tr>
-                            </thead>
-                            <tbody id="table-body" class="divide-y divide-slate-100 font-medium">
-                                <!-- Data akan masuk di sini -->
-                            </tbody>
-                        </table>
-                    </div>
-
-                    <!-- Pagination -->
-                    <div class="p-4 bg-slate-50 border-t border-slate-100 flex justify-between items-center">
-                        <p id="page-info" class="text-[10px] text-slate-400 font-black uppercase tracking-widest">Halaman 1</p>
-                        <div class="flex gap-2">
-                            <button id="prev-page" class="p-3 rounded-xl bg-white border border-slate-200 hover:border-emerald-400 disabled:opacity-30"><i class="fas fa-chevron-left text-xs"></i></button>
-                            <button id="next-page" class="p-3 rounded-xl bg-white border border-slate-200 hover:border-emerald-400 disabled:opacity-30"><i class="fas fa-chevron-right text-xs"></i></button>
-                        </div>
-                    </div>
-                </div>
-            </main>
         </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-4 py-6 grid grid-cols-1 lg:grid-cols-4 gap-6">
+        
+        <!-- SIDEBAR -->
+        <aside class="space-y-6">
+            <!-- Parameter Panel -->
+            <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200">
+                <h3 class="font-bold text-[10px] uppercase tracking-widest text-slate-500 mb-4 border-b pb-2">Konfigurasi Kalibrasi</h3>
+                <div class="space-y-4">
+                    <div>
+                        <label class="text-[9px] font-black text-slate-400 uppercase block mb-1">Koefisien A (x²)</label>
+                        <input type="number" id="poly-a" step="0.0000001" class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl p-3 font-mono text-xs font-bold focus:border-emerald-400 outline-none transition-all">
+                    </div>
+                    <div>
+                        <label class="text-[9px] font-black text-slate-400 uppercase block mb-1">Koefisien B (x)</label>
+                        <input type="number" id="poly-b" step="0.0001" class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl p-3 font-mono text-xs font-bold focus:border-emerald-400 outline-none transition-all">
+                    </div>
+                    <div>
+                        <label class="text-[9px] font-black text-slate-400 uppercase block mb-1">Koefisien C (Const)</label>
+                        <input type="number" id="poly-c" step="0.1" class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl p-3 font-mono text-xs font-bold focus:border-emerald-400 outline-none transition-all">
+                    </div>
+                    <button onclick="saveCalibration()" class="w-full bg-slate-900 text-white rounded-2xl py-4 text-[10px] font-black uppercase tracking-[0.2em] hover:bg-emerald-600 transition-all active:scale-95">Update Perangkat</button>
+                </div>
+            </div>
+
+            <!-- Stage 2 Offset Helper -->
+            <div class="bg-slate-900 text-white rounded-3xl p-6 shadow-xl border-l-8 border-emerald-400">
+                <h3 class="font-bold text-[10px] uppercase tracking-widest text-emerald-400 mb-4"><i class="fas fa-calculator mr-2"></i>Stage 2 Helper</h3>
+                <div class="space-y-3">
+                    <input type="number" id="manual-val" placeholder="Multimeter (mV)" class="w-full bg-white/10 border border-white/20 rounded-xl p-3 text-xs outline-none focus:border-emerald-400 text-white">
+                    <input type="number" id="iot-val" placeholder="Dashboard (mV)" class="w-full bg-white/10 border border-white/20 rounded-xl p-3 text-xs outline-none focus:border-emerald-400 text-white">
+                    <button onclick="calculateOffset()" class="w-full bg-emerald-500 text-slate-900 font-bold py-2 rounded-lg text-[10px] uppercase">Hitung Selisih</button>
+                    <div id="offset-result" class="text-[9px] text-slate-400 italic text-center min-h-[15px]"></div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- MAIN CONTENT -->
+        <main class="lg:col-span-3 space-y-6">
+            
+            <!-- RESEARCH ANALYTICS ENGINE -->
+            <div class="bg-white p-6 md:p-8 rounded-[2.5rem] shadow-sm border border-slate-200">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-6">
+                    <div>
+                        <h2 class="text-xl font-extrabold text-slate-800 tracking-tight">Research Analytics v8.0</h2>
+                        <p id="chart-subtitle" class="text-[10px] text-slate-400 font-black uppercase tracking-widest mt-1">Siklus Tren Data Detail (v1 vs v2)</p>
+                    </div>
+                    
+                    <div class="flex flex-wrap gap-3 w-full md:w-auto">
+                        <div class="flex-grow md:flex-initial">
+                            <label class="text-[8px] font-black uppercase text-slate-400 block mb-1 ml-1">Sampel</label>
+                            <select id="filter-bu" onchange="updateResearchChart()" class="select-custom w-full bg-slate-100 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-700 outline-none focus:border-emerald-400">
+                                <option value="M1">M1</option>
+                                <option value="M4">M4</option>
+                                <option value="M10" selected>M10</option>
+                                <option value="M14">M14</option>
+                                <option value="MK22">MK22</option>
+                                <option value="MK21">MK21</option>
+                                <option value="MK18">MK18</option>
+                                <option value="MK17">MK17</option>
+                            </select>
+                        </div>
+                        <div class="flex-grow md:flex-initial">
+                            <label class="text-[8px] font-black uppercase text-slate-400 block mb-1 ml-1">Tipe</label>
+                            <select id="filter-type" onchange="handleTypeChange()" class="select-custom w-full bg-slate-100 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-700 outline-none focus:border-emerald-400">
+                                <option value="SACP" selected>SACP (Protected)</option>
+                                <option value="STD">HCP (Natural Potential)</option>
+                            </select>
+                        </div>
+                        <div class="flex-grow md:flex-initial min-w-[150px]">
+                            <label class="text-[8px] font-black uppercase text-slate-400 block mb-1 ml-1">Parameter Riset</label>
+                            <select id="filter-param" onchange="updateResearchChart()" class="select-custom w-full bg-slate-100 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-700 outline-none focus:border-emerald-400">
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="chart-container">
+                    <canvas id="researchChart"></canvas>
+                </div>
+
+                <div id="chart-legend" class="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-100 transition-all">
+                </div>
+            </div>
+
+            <!-- LOG TABLE -->
+            <div class="bg-white rounded-[2.5rem] shadow-sm border border-slate-200 overflow-hidden flex flex-col">
+                <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                    <h3 class="font-black text-slate-800 text-xs uppercase tracking-widest"><i class="fas fa-database mr-2 text-emerald-500"></i>Log Database Detail</h3>
+                    <div class="flex gap-2">
+                        <button id="prev-page" class="p-2 px-3 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 disabled:opacity-30"><i class="fas fa-chevron-left text-xs"></i></button>
+                        <button id="next-page" class="p-2 px-3 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 disabled:opacity-30"><i class="fas fa-chevron-right text-xs"></i></button>
+                    </div>
+                </div>
+                <div class="overflow-x-auto custom-scrollbar max-h-[450px]">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-slate-50 text-[9px] uppercase font-black text-slate-400 border-b border-slate-100 sticky top-0">
+                            <tr>
+                                <th class="px-6 py-4">Waktu</th>
+                                <th class="px-6 py-4">BU / TP</th>
+                                <th class="px-6 py-4 text-center">Fase</th>
+                                <th class="px-6 py-4 text-center">On Avg (mV)</th>
+                                <th class="px-6 py-4 text-center">Final Avg (mV)</th>
+                                <th class="px-6 py-4 text-center">Current (mA)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-body" class="divide-y divide-slate-100 font-medium"></tbody>
+                    </table>
+                </div>
+            </div>
+
+        </main>
     </div>
 
     <script type="module">
@@ -173,132 +182,207 @@
 
         let allLogs = [];
         let currentPage = 1;
-        const rowsPerPage = 12;
+        const rowsPerPage = 10;
+        let researchChart;
 
-        // Autentikasi & Inisialisasi
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                document.getElementById('loader').style.opacity = '0';
-                setTimeout(() => document.getElementById('loader').classList.add('hidden'), 500);
-                loadDashboardData();
+                initChart();
+                handleTypeChange();
+                loadData();
             } else {
                 signInAnonymously(auth);
             }
         });
 
-        function loadDashboardData() {
-            // 1. Sinkronisasi Kalibrasi
-            onValue(ref(db, `${basePath}/kalibrasi`), (snap) => {
-                const data = snap.val();
-                if (data) {
-                    document.getElementById('poly-a').value = data.poly_a || 0;
-                    document.getElementById('poly-b').value = data.poly_b || 1;
-                    document.getElementById('poly-c').value = data.poly_c || 0;
-                }
-            });
-
-            // 2. Monitoring Logs
-            onValue(ref(db, `${basePath}/hasil_monitoring_final`), (snap) => {
-                const data = snap.val();
-                if (data) {
-                    allLogs = Object.values(data).reverse();
-                    renderTable();
-                }
-            });
-
-            // 3. Status Anoda Global
-            onValue(ref(db, `${basePath}/status_global`), (snap) => {
-                const data = snap.val();
-                const textEl = document.getElementById('anode-status-text');
-                const badgeEl = document.getElementById('anode-badge');
-                const iconEl = document.getElementById('anode-icon');
-                const iconBgEl = document.getElementById('anode-icon-bg');
-
-                if (data && data.status) {
-                    textEl.innerText = data.status;
-                    if (data.status === "PROTECTED") {
-                        textEl.className = "text-lg font-black leading-none text-emerald-400";
-                        badgeEl.className = "px-6 py-3 rounded-2xl border border-emerald-500/50 bg-emerald-500/10 flex items-center gap-4 transition-all shadow-lg shadow-emerald-500/10";
-                        iconEl.className = "fas fa-shield-check text-emerald-400 animate-pulse";
-                        iconBgEl.className = "w-10 h-10 rounded-full bg-emerald-500/20 flex items-center justify-center";
-                    } else {
-                        textEl.className = "text-lg font-black leading-none text-rose-400";
-                        badgeEl.className = "px-6 py-3 rounded-2xl border border-rose-500/50 bg-rose-500/10 flex items-center gap-4 transition-all shadow-lg shadow-rose-500/10";
-                        iconEl.className = "fas fa-shield-slash text-rose-400";
-                        iconBgEl.className = "w-10 h-10 rounded-full bg-rose-500/20 flex items-center justify-center";
+        function initChart() {
+            const ctx = document.getElementById('researchChart').getContext('2d');
+            researchChart = new Chart(ctx, {
+                type: 'line',
+                data: { labels: [], datasets: [] },
+                options: {
+                    responsive: true, maintainAspectRatio: false,
+                    scales: {
+                        y: { grid: { color: '#f1f5f9' }, title: { display: true, font: { weight: 'bold', size: 10 } } },
+                        x: { display: true, grid: { display: false }, ticks: { font: { size: 9 }, maxRotation: 45, minRotation: 45 } }
+                    },
+                    plugins: { 
+                        legend: { display: false }, 
+                        tooltip: { cornerRadius: 12, padding: 12, backgroundColor: 'rgba(15, 23, 42, 0.9)' } 
                     }
                 }
             });
         }
 
-        function renderTable() {
+        window.handleTypeChange = () => {
+            const type = document.getElementById('filter-type').value;
+            const paramSelect = document.getElementById('filter-param');
+            paramSelect.innerHTML = "";
+            if (type === 'SACP') {
+                const options = [
+                    { val: 'on_avg', text: 'On Potensial (V-on)' },
+                    { val: 'instantoff_avg', text: 'Instant Off (V-off)' },
+                    { val: 'rest_avg', text: 'Rest (Depolarisasi)' },
+                    { val: 'i_ma', text: 'Arus Proteksi (mA)' }
+                ];
+                options.forEach(o => paramSelect.add(new Option(o.text, o.val)));
+            } else {
+                paramSelect.add(new Option('Half-Cell Potential (HCP)', 'hcp'));
+            }
+            updateResearchChart();
+        };
+
+        function loadData() {
+            onValue(ref(db, `${basePath}/kalibrasi`), (snap) => {
+                const d = snap.val();
+                if (d) {
+                    document.getElementById('poly-a').value = d.poly_a || 0;
+                    document.getElementById('poly-b').value = d.poly_b || 1;
+                    document.getElementById('poly-c').value = d.poly_c || 0;
+                }
+            });
+
+            onValue(ref(db, `${basePath}/status_global`), (snap) => {
+                const d = snap.val();
+                const text = document.getElementById('anode-status-text');
+                const icon = document.getElementById('anode-icon');
+                if (d && d.status) {
+                    text.innerText = d.status;
+                    text.className = d.status === "PROTECTED" ? "text-xs font-black text-emerald-400" : "text-xs font-black text-rose-400";
+                    icon.className = d.status === "PROTECTED" ? "fas fa-shield-check text-emerald-400 animate-pulse" : "fas fa-shield-slash text-rose-400";
+                }
+            });
+
+            onValue(ref(db, `${basePath}/hasil_monitoring_final`), (snap) => {
+                const data = snap.val();
+                if (data) {
+                    allLogs = Object.values(data).filter(d => (d.on_avg > -5000 && d.v_off_avg > -5000)); 
+                    updateTable();
+                    updateResearchChart();
+                }
+            });
+        }
+
+        window.updateResearchChart = () => {
+            const selectedBU = document.getElementById('filter-bu').value;
+            const selectedParam = document.getElementById('filter-param').value;
+            const legendEl = document.getElementById('chart-legend');
+            
+            let buData = allLogs.filter(d => d.bu === selectedBU).sort((a,b) => a.timestamp - b.timestamp);
+            buData = buData.slice(-20);
+            
+            const labels = buData.map(d => d.waktu_lokal ? d.waktu_lokal.substring(5, 16) : '');
+            researchChart.data.labels = labels;
+            researchChart.data.datasets = [];
+
+            const isArus = (selectedParam === 'i_ma');
+            researchChart.options.scales.y.reverse = !isArus;
+            researchChart.options.scales.y.title.text = isArus ? 'Arus (mA)' : 'Potensial (mV vs CSE)';
+            document.getElementById('chart-subtitle').innerText = `ANALISIS ${selectedParam.replace('_',' ').toUpperCase()} - BU ${selectedBU}`;
+
+            if (isArus) {
+                researchChart.data.datasets.push({
+                    label: 'Arus mA', 
+                    data: buData.map(d => d.i_ma || 0),
+                    borderColor: '#f59e0b', backgroundColor: 'rgba(245, 158, 11, 0.1)',
+                    borderWidth: 3, tension: 0.3, fill: true
+                });
+                legendEl.innerHTML = `<div class="flex items-center gap-2 col-span-4"><div class="w-3 h-3 rounded bg-amber-500"></div><span class="text-[10px] font-bold text-slate-600 uppercase">Energy Output (mA)</span></div>`;
+            } else {
+                const targetFaseMap = {
+                    'on_avg': 'PH1',
+                    'instantoff_avg': 'PH1',
+                    'rest_avg': 'PH2',
+                    'hcp': 'STD'
+                };
+                const targetFase = targetFaseMap[selectedParam];
+
+                const t1Data = buData.map(d => (d.fase === targetFase && d.tp.includes('T1')) ? d[selectedParam] : null);
+                const t2Data = buData.map(d => (d.fase === targetFase && d.tp.includes('T2')) ? d[selectedParam] : null);
+
+                researchChart.data.datasets.push({
+                    label: 'Tulangan T1', data: t1Data,
+                    borderColor: '#10b981', backgroundColor: '#10b981', borderWidth: 4, tension: 0.3, spanGaps: true
+                });
+                researchChart.data.datasets.push({
+                    label: 'Tulangan T2', data: t2Data,
+                    borderColor: '#3b82f6', backgroundColor: '#3b82f6', borderWidth: 4, tension: 0.3, spanGaps: true
+                });
+
+                legendEl.innerHTML = `
+                    <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full bg-emerald-500"></div><span class="text-[10px] font-bold text-slate-600 uppercase">Tulangan T1</span></div>
+                    <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full bg-blue-500"></div><span class="text-[10px] font-bold text-slate-600 uppercase">Tulangan T2</span></div>
+                    <div class="flex items-center gap-2"><div class="w-6 h-0 border-t border-dashed border-emerald-400 opacity-40"></div><span class="text-[10px] font-bold text-slate-400 uppercase">Target -850mV</span></div>
+                    <div class="flex items-center gap-2"><div class="w-6 h-0 border-t border-dashed border-rose-400 opacity-40"></div><span class="text-[10px] font-bold text-slate-400 uppercase">Batas -350mV</span></div>
+                `;
+            }
+            researchChart.update();
+        };
+
+        function updateTable() {
             const tbody = document.getElementById('table-body');
             tbody.innerHTML = "";
+            let dataTable = [...allLogs].reverse();
             const start = (currentPage - 1) * rowsPerPage;
-            const pagedData = allLogs.slice(start, start + rowsPerPage);
+            const paged = dataTable.slice(start, start + rowsPerPage);
 
-            pagedData.forEach(log => {
+            paged.forEach(log => {
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-slate-50 transition-colors";
+                const phaseBadge = log.fase === 'PH1' ? 'badge-ph1' : (log.fase === 'PH2' ? 'badge-ph2' : 'badge-std');
+                const phaseDisplay = log.fase === 'STD' ? 'HCP' : log.fase;
+                
+                const primaryV = log.fase === 'STD' ? log.hcp : (log.fase === 'PH2' ? log.rest_avg : log.instantoff_avg);
+                const onV = log.on_avg ? Math.round(log.on_avg) + ' mV' : '-';
+
                 tr.innerHTML = `
                     <td class="px-6 py-4 text-slate-400 font-mono text-[10px]">${log.waktu_lokal || '-'}</td>
-                    <td class="px-6 py-4">
-                        <div class="font-black text-slate-800 text-xs">${log.bu} <span class="text-[9px] text-slate-400 ml-1 font-bold">${log.tp}</span></div>
-                    </td>
+                    <td class="px-6 py-4 font-black text-slate-800 text-xs">${log.bu} <span class="text-[9px] text-slate-400 font-bold ml-1">${log.tp}</span></td>
                     <td class="px-6 py-4 text-center">
-                        <span class="text-[9px] font-black px-2 py-1 rounded-full ${log.fase === 'PH1' ? 'bg-blue-100 text-blue-600' : 'bg-amber-100 text-amber-600'}">${log.fase}</span>
+                        <span class="text-[8px] font-black px-2 py-0.5 rounded-full ${phaseBadge}">${phaseDisplay}</span>
                     </td>
-                    <td class="px-6 py-4 text-center">
-                        <span class="font-mono font-black text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-xl border border-emerald-100">${Math.round(log.v_off_avg)} mV</span>
-                    </td>
+                    <td class="px-6 py-4 text-center font-mono text-slate-400 text-xs">${onV}</td>
+                    <td class="px-6 py-4 text-center font-mono font-black text-emerald-600 bg-emerald-50">${Math.round(primaryV)} mV</td>
                     <td class="px-6 py-4 text-center font-mono text-slate-500 text-xs">${log.i_ma ? log.i_ma.toFixed(2) : '0.00'}</td>
                 `;
                 tbody.appendChild(tr);
             });
-            document.getElementById('page-info').innerText = `Halaman ${currentPage} dari ${Math.ceil(allLogs.length/rowsPerPage)}`;
+            document.getElementById('prev-page').disabled = (currentPage === 1);
+            document.getElementById('next-page').disabled = (currentPage >= Math.ceil(allLogs.length/rowsPerPage));
         }
 
-        // Action: Simpan Kalibrasi
-        document.getElementById('btn-save-cal').onclick = () => {
+        window.saveCalibration = () => {
             const poly_a = parseFloat(document.getElementById('poly-a').value);
             const poly_b = parseFloat(document.getElementById('poly-b').value);
             const poly_c = parseFloat(document.getElementById('poly-c').value);
-
             set(ref(db, `${basePath}/kalibrasi`), { poly_a, poly_b, poly_c })
-                .then(() => alert("Parameter Polinomial v7.3 Berhasil Diperbarui!"));
+                .then(() => alert("Parameter SACP v8.0 Berhasil Disimpan!"));
         };
 
-        // Helper: Kalkulasi Offset
         window.calculateOffset = () => {
             const manual = parseFloat(document.getElementById('manual-val').value);
             const iot = parseFloat(document.getElementById('iot-val').value);
-            const polyC_current = parseFloat(document.getElementById('poly-c').value);
-            
+            const currentC = parseFloat(document.getElementById('poly-c').value);
             if (!isNaN(manual) && !isNaN(iot)) {
                 const diff = manual - iot;
-                const newPolyC = polyC_current + diff;
-                document.getElementById('offset-result').innerHTML = `Selisih: <b>${diff.toFixed(1)} mV</b><br>Saran Poly_C Baru: <b>${newPolyC.toFixed(2)}</b>`;
+                document.getElementById('offset-result').innerHTML = `Saran Poly_C Baru: <b class="text-emerald-400">${(currentC + diff).toFixed(2)}</b>`;
             }
         };
 
-        // Ekspor CSV
-        document.getElementById('btn-export').onclick = () => {
-            let csv = "Timestamp,BU,T/P,Fase,Potential_EMA,Current_mA,Suhu,poly_a,poly_b,poly_c\n";
-            allLogs.forEach(d => {
-                csv += `${d.waktu_lokal},${d.bu},${d.tp},${d.fase},${d.v_off_avg},${d.i_ma},${d.suhu},${d.poly_a},${d.poly_b},${d.poly_c}\n`;
+        window.exportCSV = () => {
+            let csv = "Waktu,BU,Fase,T/P,On_Avg,Off_Avg,Rest_Avg,HCP,Arus_mA,Poly_A,Poly_B,Poly_C\n";
+            [...allLogs].reverse().forEach(d => { 
+                csv += `${d.waktu_lokal},${d.bu},${d.fase},${d.tp},${d.on_avg || 0},${d.instantoff_avg || 0},${d.rest_avg || 0},${d.hcp || 0},${d.i_ma || 0},${d.poly_a},${d.poly_b},${d.poly_c}\n`; 
             });
             const blob = new Blob([csv], { type: 'text/csv' });
-            const link = document.createElement("a");
-            link.href = URL.createObjectURL(blob);
-            link.download = `SACP_v7.3_Hybrid_Report.csv`;
-            link.click();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.setAttribute('href', url); a.setAttribute('download', `SACP_Detailed_Research_v8.csv`);
+            document.body.appendChild(a); a.click(); document.body.removeChild(a);
         };
 
-        // Navigasi
-        document.getElementById('prev-page').onclick = () => { if(currentPage > 1) { currentPage--; renderTable(); } };
-        document.getElementById('next-page').onclick = () => { if(currentPage < Math.ceil(allLogs.length/rowsPerPage)) { currentPage++; renderTable(); } };
-
+        document.getElementById('prev-page').onclick = () => { if(currentPage > 1) { currentPage--; updateTable(); } };
+        document.getElementById('next-page').onclick = () => { if(currentPage < Math.ceil(allLogs.length/rowsPerPage)) { currentPage++; updateTable(); } };
     </script>
 </body>
 </html>
-
