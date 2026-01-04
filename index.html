@@ -355,7 +355,7 @@
             const poly_a = parseFloat(document.getElementById('poly-a').value);
             const poly_b = parseFloat(document.getElementById('poly-b').value);
             const poly_c = parseFloat(document.getElementById('poly-c').value);
-            set(ref(db, `${basePath}/kalibrasi`), { poly_a, poly_b, poly_c })
+            set(ref(db, `${basePath}/calib`), { poly_a, poly_b, poly_c })
                 .then(() => alert("Parameter SACP v8.0 Berhasil Disimpan!"));
         };
 
@@ -386,4 +386,5 @@
     </script>
 </body>
 </html>
+
 
