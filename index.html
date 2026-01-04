@@ -233,7 +233,7 @@
         };
 
         function loadData() {
-            onValue(ref(db, `${basePath}/kalibrasi`), (snap) => {
+            onValue(ref(db, `${basePath}/calib`), (snap) => {
                 const d = snap.val();
                 if (d) {
                     document.getElementById('poly-a').value = d.poly_a || 0;
@@ -386,3 +386,4 @@
     </script>
 </body>
 </html>
+
