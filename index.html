@@ -3,388 +3,485 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard v8.0</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <title>CorroVision Master Dashboard v13.1</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Pustaka Grafik & Excel -->
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
-        .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+        
+        body { 
+            font-family: 'Plus Jakarta Sans', sans-serif; 
+            background-color: #f8fafc; 
+        }
+
+        .bg-slate-dark { background-color: #0f172a; }
+        .emerald-gradient { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+        
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: #f1f1f1; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
-        .chart-container { position: relative; height: 420px; width: 100%; }
-        .select-custom { appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 0.75rem center; background-size: 1rem; }
-        .badge-ph1 { background-color: #dbeafe; color: #1e40af; }
-        .badge-ph2 { background-color: #fef3c7; color: #92400e; }
-        .badge-std { background-color: #f1f5f9; color: #475569; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #10b981; border-radius: 10px; }
+        
+        .row-animate { animation: fadeIn 0.4s ease forwards; opacity: 0; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        .badge-patch { background-color: #ecfdf5; color: #059669; border: 1px solid #10b98120; }
+        .badge-bounding { background-color: #fffbeb; color: #d97706; border: 1px solid #f59e0b20; }
+        .badge-existing { background-color: #f0f9ff; color: #0284c7; border: 1px solid #0ea5e920; }
+
+        .apexcharts-tooltip {
+            border-radius: 15px !important;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1) !important;
+            border: 1px solid #e2e8f0 !important;
+            font-family: 'Plus Jakarta Sans', sans-serif !important;
+        }
     </style>
 </head>
-<body class="text-slate-800">
+<body class="text-slate-900">
 
-    <!-- Navbar -->
-    <nav class="sticky top-0 z-40 bg-slate-900 text-white border-b-4 border-emerald-500 shadow-xl">
-        <div class="max-w-7xl mx-auto px-4 py-4 flex flex-col md:flex-row justify-between items-center gap-4">
-            <div class="flex items-center gap-4">
-                <div class="bg-emerald-500 p-2 rounded-xl text-slate-900">
-                    <i class="fas fa-microchip text-xl"></i>
+    <!-- LOADING OVERLAY -->
+    <div id="loader" class="fixed inset-0 z-[99] bg-slate-950 flex flex-col items-center justify-center text-white transition-opacity duration-500">
+        <div class="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mb-4"></div>
+        <h2 class="text-emerald-500 font-bold tracking-tight text-xl italic text-center">CorroVision<br><span class="text-[11px] text-slate-500 font-medium tracking-normal not-italic">Menyinkronkan Visualisasi...</span></h2>
+    </div>
+
+    <div class="min-h-screen flex flex-col lg:flex-row">
+        <!-- SIDEBAR -->
+        <aside class="w-full lg:w-80 bg-slate-dark text-white flex flex-col shadow-2xl border-r border-slate-800">
+            <div class="p-10 border-b border-slate-800 flex items-center gap-3">
+                <div class="bg-emerald-500 p-2.5 rounded-2xl text-slate-900 shadow-lg">
+                    <i class="fas fa-chart-line text-2xl"></i>
                 </div>
                 <div>
-                    <h1 class="text-xl font-extrabold tracking-tight">Dashboard<span class="text-emerald-400">v8.0</span></h1>
-                    <p class="text-slate-400 text-[9px] font-black uppercase tracking-widest leading-none mt-1">Detailed Data Architecture Monitoring</p>
+                    <h1 class="text-2xl font-bold italic tracking-tight leading-none">Corro<span class="text-emerald-400">Vision</span></h1>
+                    <p class="text-[10px] text-slate-500 font-semibold tracking-wide mt-1">Research Hub v13.1</p>
                 </div>
             </div>
 
-            <div class="flex items-center gap-3">
-                <div id="anode-status-card" class="px-4 py-2 rounded-xl border border-slate-700 bg-white/5 flex items-center gap-3">
-                    <div class="text-right">
-                        <p class="text-[8px] uppercase font-black opacity-40 leading-none mb-1">Status Anoda</p>
-                        <p id="anode-status-text" class="text-xs font-black leading-none text-slate-400">SYNCING...</p>
+            <div class="p-6 space-y-6 flex-1 overflow-y-auto custom-scrollbar">
+                <!-- PANEL FILTER GRAFIK -->
+                <div class="bg-slate-800/40 rounded-3xl p-6 border border-slate-700/50 shadow-inner">
+                    <h3 class="text-[11px] font-bold text-emerald-400 mb-4 italic flex items-center gap-2 uppercase tracking-widest leading-none">
+                        <i class="fas fa-filter text-[9px]"></i> Filter Visualisasi
+                    </h3>
+                    <div class="space-y-4">
+                        <div class="space-y-1">
+                            <label class="text-[10px] font-semibold text-slate-500 ml-2 italic">Benda Uji (BU)</label>
+                            <select id="filter-bu" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-xs font-bold outline-none focus:border-emerald-500 cursor-pointer italic transition-all">
+                                <option value="all">Semua Benda Uji</option>
+                                <option value="M1">Benda Uji M1</option>
+                                <option value="M4">Benda Uji M4</option>
+                                <option value="M10">Benda Uji M10</option>
+                                <option value="M14">Benda Uji M14</option>
+                                <option value="MK22">Benda Uji MK22</option>
+                                <option value="MK21">Benda Uji MK21</option>
+                            </select>
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[10px] font-semibold text-slate-500 ml-2 italic">Tipe Pengujian</label>
+                            <select id="filter-type" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-xs font-bold outline-none focus:border-emerald-500 cursor-pointer italic text-emerald-400">
+                                <option value="SACP">SACP (PH1 + PH2)</option>
+                                <option value="HCP">HCP (Potensial Alami)</option>
+                            </select>
+                        </div>
+                        <div class="space-y-1">
+                            <label class="text-[10px] font-semibold text-slate-500 ml-2 italic">Tipe Data Korosi</label>
+                            <select id="filter-data-type" class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-xs font-bold outline-none focus:border-emerald-500 cursor-pointer italic">
+                                <!-- Opsi dinamis diisi JS -->
+                            </select>
+                        </div>
                     </div>
-                    <i id="anode-icon" class="fas fa-circle-notch animate-spin text-slate-500 text-xs"></i>
                 </div>
-                <button onclick="exportCSV()" class="bg-emerald-500 hover:bg-emerald-600 text-slate-900 px-4 py-2 rounded-xl text-[10px] font-black uppercase shadow-lg active:scale-95 transition-all">
-                    <i class="fas fa-file-export mr-1"></i> Export Data
+
+                <!-- KALIBRASI -->
+                <div class="bg-slate-800/20 rounded-3xl p-6 border border-slate-700/30">
+                    <h3 class="text-[11px] font-bold text-slate-400 mb-4 italic flex items-center gap-2">
+                        <i class="fas fa-sliders text-[9px]"></i> Konfigurasi Remote
+                    </h3>
+                    <div class="space-y-3">
+                        <input type="number" id="input-a" placeholder="Koefisien A" step="0.0000001" class="w-full bg-slate-900/50 border border-slate-700 rounded-xl p-2 font-mono text-[10px] text-emerald-400 outline-none">
+                        <input type="number" id="input-b" placeholder="Koefisien B" step="0.0001" class="w-full bg-slate-900/50 border border-slate-700 rounded-xl p-2 font-mono text-[10px] text-emerald-400 outline-none">
+                        <input type="number" id="input-c" placeholder="Konstanta C" step="0.1" class="w-full bg-slate-900/50 border border-slate-700 rounded-xl p-2 font-mono text-[10px] text-emerald-400 outline-none">
+                        <button id="btn-save-cal" class="w-full bg-slate-700 text-white rounded-xl py-2.5 text-[10px] font-bold hover:bg-emerald-600 transition-all italic">
+                            Update Parameter
+                        </button>
+                    </div>
+                </div>
+
+                <button id="btn-export" class="w-full bg-slate-100 text-slate-900 rounded-2xl py-4 text-[11px] font-bold flex items-center justify-center gap-2 hover:bg-white transition-all italic shadow-xl border-b-4 border-slate-300">
+                    <i class="fas fa-file-excel text-emerald-600 text-lg"></i> Ekspor Laporan Excel
                 </button>
             </div>
-        </div>
-    </nav>
 
-    <div class="max-w-7xl mx-auto px-4 py-6 grid grid-cols-1 lg:grid-cols-4 gap-6">
-        
-        <!-- SIDEBAR -->
-        <aside class="space-y-6">
-            <!-- Parameter Panel -->
-            <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-200">
-                <h3 class="font-bold text-[10px] uppercase tracking-widest text-slate-500 mb-4 border-b pb-2">Konfigurasi Kalibrasi</h3>
-                <div class="space-y-4">
-                    <div>
-                        <label class="text-[9px] font-black text-slate-400 uppercase block mb-1">Koefisien A (x²)</label>
-                        <input type="number" id="poly-a" step="0.0000001" class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl p-3 font-mono text-xs font-bold focus:border-emerald-400 outline-none transition-all">
-                    </div>
-                    <div>
-                        <label class="text-[9px] font-black text-slate-400 uppercase block mb-1">Koefisien B (x)</label>
-                        <input type="number" id="poly-b" step="0.0001" class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl p-3 font-mono text-xs font-bold focus:border-emerald-400 outline-none transition-all">
-                    </div>
-                    <div>
-                        <label class="text-[9px] font-black text-slate-400 uppercase block mb-1">Koefisien C (Const)</label>
-                        <input type="number" id="poly-c" step="0.1" class="w-full bg-slate-50 border-2 border-slate-100 rounded-xl p-3 font-mono text-xs font-bold focus:border-emerald-400 outline-none transition-all">
-                    </div>
-                    <button onclick="saveCalibration()" class="w-full bg-slate-900 text-white rounded-2xl py-4 text-[10px] font-black uppercase tracking-[0.2em] hover:bg-emerald-600 transition-all active:scale-95">Update Perangkat</button>
-                </div>
-            </div>
-
-            <!-- Stage 2 Offset Helper -->
-            <div class="bg-slate-900 text-white rounded-3xl p-6 shadow-xl border-l-8 border-emerald-400">
-                <h3 class="font-bold text-[10px] uppercase tracking-widest text-emerald-400 mb-4"><i class="fas fa-calculator mr-2"></i>Stage 2 Helper</h3>
-                <div class="space-y-3">
-                    <input type="number" id="manual-val" placeholder="Multimeter (mV)" class="w-full bg-white/10 border border-white/20 rounded-xl p-3 text-xs outline-none focus:border-emerald-400 text-white">
-                    <input type="number" id="iot-val" placeholder="Dashboard (mV)" class="w-full bg-white/10 border border-white/20 rounded-xl p-3 text-xs outline-none focus:border-emerald-400 text-white">
-                    <button onclick="calculateOffset()" class="w-full bg-emerald-500 text-slate-900 font-bold py-2 rounded-lg text-[10px] uppercase">Hitung Selisih</button>
-                    <div id="offset-result" class="text-[9px] text-slate-400 italic text-center min-h-[15px]"></div>
+            <div class="p-8 bg-black/30 border-t border-slate-800">
+                <div class="flex items-center gap-3">
+                    <div id="status-dot" class="w-2.5 h-2.5 rounded-full bg-rose-500 animate-pulse"></div>
+                    <span id="status-text" class="text-[10px] font-bold text-slate-400 italic leading-none">Terputus</span>
                 </div>
             </div>
         </aside>
 
-        <!-- MAIN CONTENT -->
-        <main class="lg:col-span-3 space-y-6">
-            
-            <!-- RESEARCH ANALYTICS ENGINE -->
-            <div class="bg-white p-6 md:p-8 rounded-[2.5rem] shadow-sm border border-slate-200">
-                <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-6">
-                    <div>
-                        <h2 class="text-xl font-extrabold text-slate-800 tracking-tight">Research Analytics v8.0</h2>
-                        <p id="chart-subtitle" class="text-[10px] text-slate-400 font-black uppercase tracking-widest mt-1">Siklus Tren Data Detail (v1 vs v2)</p>
-                    </div>
-                    
-                    <div class="flex flex-wrap gap-3 w-full md:w-auto">
-                        <div class="flex-grow md:flex-initial">
-                            <label class="text-[8px] font-black uppercase text-slate-400 block mb-1 ml-1">Sampel</label>
-                            <select id="filter-bu" onchange="updateResearchChart()" class="select-custom w-full bg-slate-100 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-700 outline-none focus:border-emerald-400">
-                                <option value="M1">M1</option>
-                                <option value="M4">M4</option>
-                                <option value="M10" selected>M10</option>
-                                <option value="M14">M14</option>
-                                <option value="MK22">MK22</option>
-                                <option value="MK21">MK21</option>
-                                <option value="MK18">MK18</option>
-                                <option value="MK17">MK17</option>
-                            </select>
-                        </div>
-                        <div class="flex-grow md:flex-initial">
-                            <label class="text-[8px] font-black uppercase text-slate-400 block mb-1 ml-1">Tipe</label>
-                            <select id="filter-type" onchange="handleTypeChange()" class="select-custom w-full bg-slate-100 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-700 outline-none focus:border-emerald-400">
-                                <option value="SACP" selected>SACP (Protected)</option>
-                                <option value="STD">HCP (Natural Potential)</option>
-                            </select>
-                        </div>
-                        <div class="flex-grow md:flex-initial min-w-[150px]">
-                            <label class="text-[8px] font-black uppercase text-slate-400 block mb-1 ml-1">Parameter Riset</label>
-                            <select id="filter-param" onchange="updateResearchChart()" class="select-custom w-full bg-slate-100 border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-700 outline-none focus:border-emerald-400">
-                            </select>
+        <!-- MAIN AREA -->
+        <main class="flex-1 flex flex-col h-screen overflow-hidden">
+            <!-- HEADER -->
+            <header class="bg-white border-b-4 border-emerald-500 px-8 py-6 lg:px-12 flex flex-col md:flex-row justify-between items-center z-10 shadow-sm gap-6">
+                <div>
+                    <h2 id="view-title" class="text-2xl font-extrabold text-slate-900 tracking-tight italic leading-none">Analisis Tren Korosi</h2>
+                    <p class="text-xs text-slate-400 font-semibold mt-2 italic text-emerald-600">Grafik Multi-Axis: Potensial (Inversi) & Arus</p>
+                </div>
+                
+                <div class="flex items-center gap-6">
+                    <div id="anode-badge" class="flex items-center gap-3 bg-slate-100 px-6 py-3 rounded-3xl border-2 border-slate-200 transition-all shadow-inner">
+                        <i id="anode-icon" class="fas fa-shield-halved text-slate-400"></i>
+                        <div class="text-left font-bold italic leading-none">
+                            <p id="anode-status" class="text-sm text-slate-400 tracking-tight">Menunggu...</p>
                         </div>
                     </div>
                 </div>
+            </header>
 
-                <div class="chart-container">
-                    <canvas id="researchChart"></canvas>
+            <!-- DASHBOARD CONTENT -->
+            <div class="flex-1 overflow-y-auto p-6 lg:p-8 space-y-8 bg-slate-50 custom-scrollbar">
+                
+                <!-- GRAPH CARD -->
+                <div class="bg-white rounded-[3rem] p-8 shadow-sm border border-slate-200">
+                    <div id="chart-main" class="w-full h-[450px]"></div>
                 </div>
 
-                <div id="chart-legend" class="mt-8 grid grid-cols-2 md:grid-cols-4 gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-100 transition-all">
+                <!-- TABLE CARD -->
+                <div class="bg-white rounded-[3rem] shadow-sm border border-slate-200 overflow-hidden">
+                    <div class="p-8 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
+                        <h3 class="text-sm font-bold text-slate-800 italic flex items-center gap-2 leading-none">
+                            <i class="fas fa-list-ul text-emerald-500"></i> Log Data Terkonsolidasi
+                        </h3>
+                        <div id="data-counter" class="bg-slate-900 text-emerald-400 px-6 py-2 rounded-full text-[11px] font-bold shadow-xl italic border-b-4 border-emerald-900">
+                            0 Baris Data
+                        </div>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm border-collapse font-semibold italic">
+                            <thead id="table-head" class="bg-slate-50 text-[11px] font-bold text-slate-400 border-b border-slate-100 sticky top-0 z-20">
+                                <!-- Dinamis diisi JS -->
+                            </thead>
+                            <tbody id="log-table-body" class="divide-y divide-slate-100 text-slate-700">
+                                <!-- Data rows injected here -->
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
+
             </div>
-
-            <!-- LOG TABLE -->
-            <div class="bg-white rounded-[2.5rem] shadow-sm border border-slate-200 overflow-hidden flex flex-col">
-                <div class="p-6 border-b border-slate-100 flex justify-between items-center bg-slate-50/50">
-                    <h3 class="font-black text-slate-800 text-xs uppercase tracking-widest"><i class="fas fa-database mr-2 text-emerald-500"></i>Log Database Detail</h3>
-                    <div class="flex gap-2">
-                        <button id="prev-page" class="p-2 px-3 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 disabled:opacity-30"><i class="fas fa-chevron-left text-xs"></i></button>
-                        <button id="next-page" class="p-2 px-3 rounded-lg bg-white border border-slate-200 hover:bg-slate-50 disabled:opacity-30"><i class="fas fa-chevron-right text-xs"></i></button>
-                    </div>
-                </div>
-                <div class="overflow-x-auto custom-scrollbar max-h-[450px]">
-                    <table class="w-full text-left text-sm">
-                        <thead class="bg-slate-50 text-[9px] uppercase font-black text-slate-400 border-b border-slate-100 sticky top-0">
-                            <tr>
-                                <th class="px-6 py-4">Waktu</th>
-                                <th class="px-6 py-4">BU / TP</th>
-                                <th class="px-6 py-4 text-center">Fase</th>
-                                <th class="px-6 py-4 text-center">On Avg (mV)</th>
-                                <th class="px-6 py-4 text-center">Final Avg (mV)</th>
-                                <th class="px-6 py-4 text-center">Current (mA)</th>
-                            </tr>
-                        </thead>
-                        <tbody id="table-body" class="divide-y divide-slate-100 font-medium"></tbody>
-                    </table>
-                </div>
-            </div>
-
         </main>
     </div>
 
+    <!-- TOAST NOTIF -->
+    <div id="toast" class="fixed bottom-10 left-1/2 -translate-x-1/2 bg-slate-900 text-white px-10 py-5 rounded-full shadow-2xl z-50 transform translate-y-40 transition-all duration-700 flex items-center gap-4 border-b-4 border-emerald-500 italic">
+        <i class="fas fa-check-circle text-emerald-400 text-lg"></i>
+        <span id="toast-text" class="font-bold text-sm">Operasi Berhasil</span>
+    </div>
+
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
-        import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-database.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
+        import { getDatabase, ref, onValue, set } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyA_tdRuWtUshubvm-lx2Et8OfB771wI9iU",
             authDomain: "korosi-iot.firebaseapp.com",
             databaseURL: "https://korosi-iot-default-rtdb.asia-southeast1.firebasedatabase.app",
-            projectId: "korosi-iot"
+            projectId: "korosi-iot",
+            storageBucket: "korosi-iot.firebasestorage.app",
+            messagingSenderId: "703319558184",
+            appId: "1:703319558184:web:4882df38c58cc74f9e8d1d"
         };
-        
+
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getDatabase(app);
-        const basePath = `artifacts/korosi-iot/public/data`;
+        const appIdStr = "korosi-iot";
+        const rootPath = `artifacts/${appIdStr}/public/data`;
 
-        let allLogs = [];
-        let currentPage = 1;
-        const rowsPerPage = 10;
-        let researchChart;
+        let rawLogs = [];
+        let processedData = [];
+        let chartInstance = null;
 
+        const el = {
+            tableBody: document.getElementById('log-table-body'),
+            tableHead: document.getElementById('table-head'),
+            counter: document.getElementById('data-counter'),
+            filterBU: document.getElementById('filter-bu'),
+            filterType: document.getElementById('filter-type'),
+            filterData: document.getElementById('filter-data-type'),
+            anodeStatus: document.getElementById('anode-status'),
+            anodeIcon: document.getElementById('anode-icon'),
+            anodeBadge: document.getElementById('anode-badge'),
+            statusText: document.getElementById('status-text'),
+            statusDot: document.getElementById('status-dot')
+        };
+
+        function updateDataTypeOptions() {
+            const type = el.filterType.value;
+            el.filterData.innerHTML = "";
+            if (type === 'SACP') {
+                const options = [
+                    { val: 'on_avg', text: 'On Potensial' },
+                    { val: 'off_avg', text: 'Instant Off' },
+                    { val: 'rest_avg', text: 'Rest Potential' }
+                ];
+                options.forEach(opt => {
+                    const o = document.createElement('option');
+                    o.value = opt.val; o.innerText = opt.text;
+                    el.filterData.appendChild(o);
+                });
+            } else {
+                const o = document.createElement('option');
+                o.value = 'hcp_avg'; o.innerText = 'Potensial HCP';
+                el.filterData.appendChild(o);
+            }
+            processAndRender();
+        }
+
+        signInAnonymously(auth).catch(e => console.error(e));
         onAuthStateChanged(auth, (user) => {
             if (user) {
-                initChart();
-                handleTypeChange();
-                loadData();
-            } else {
-                signInAnonymously(auth);
+                el.statusText.innerText = "Terhubung Online";
+                el.statusDot.classList.replace('bg-rose-500', 'bg-emerald-500');
+                document.getElementById('loader').style.opacity = '0';
+                setTimeout(() => document.getElementById('loader').classList.add('hidden'), 500);
+                initListeners();
             }
         });
 
-        function initChart() {
-            const ctx = document.getElementById('researchChart').getContext('2d');
-            researchChart = new Chart(ctx, {
-                type: 'line',
-                data: { labels: [], datasets: [] },
-                options: {
-                    responsive: true, maintainAspectRatio: false,
-                    scales: {
-                        y: { grid: { color: '#f1f5f9' }, title: { display: true, font: { weight: 'bold', size: 10 } } },
-                        x: { display: true, grid: { display: false }, ticks: { font: { size: 9 }, maxRotation: 45, minRotation: 45 } }
-                    },
-                    plugins: { 
-                        legend: { display: false }, 
-                        tooltip: { cornerRadius: 12, padding: 12, backgroundColor: 'rgba(15, 23, 42, 0.9)' } 
+        function initListeners() {
+            onValue(ref(db, `${rootPath}/calib`), (snap) => {
+                const d = snap.val();
+                if(d) {
+                    document.getElementById('input-a').value = d.poly_a || 0;
+                    document.getElementById('input-b').value = d.poly_b || 1;
+                    document.getElementById('input-c').value = d.poly_c || 0;
+                }
+            });
+
+            onValue(ref(db, `${rootPath}/status_global`), (snap) => {
+                const d = snap.val();
+                if(d && d.status) {
+                    el.anodeStatus.innerText = d.status;
+                    if(d.status === 'PROTECTED') {
+                        el.anodeBadge.classList.replace('bg-slate-100', 'bg-emerald-500');
+                        el.anodeStatus.classList.replace('text-slate-400', 'text-white');
+                        el.anodeIcon.className = "fas fa-shield-check text-white animate-pulse";
+                    } else {
+                        el.anodeBadge.classList.replace('bg-emerald-500', 'bg-rose-500');
+                        el.anodeStatus.classList.replace('text-white', 'text-white');
+                        el.anodeIcon.className = "fas fa-shield-slash text-white";
                     }
                 }
             });
+
+            onValue(ref(db, `${rootPath}/logs`), (snapshot) => {
+                const data = snapshot.val();
+                if (data) { 
+                    rawLogs = Object.values(data); 
+                    updateDataTypeOptions(); 
+                }
+            });
         }
 
-        window.handleTypeChange = () => {
-            const type = document.getElementById('filter-type').value;
-            const paramSelect = document.getElementById('filter-param');
-            paramSelect.innerHTML = "";
+        function processAndRender() {
+            const buFilter = el.filterBU.value;
+            const typeFilter = el.filterType.value;
+            const dataParam = el.filterData.value;
+
+            const map = new Map();
+            rawLogs.forEach(item => {
+                if (typeFilter === 'SACP' && item.fase === 'HCP') return;
+                if (typeFilter === 'HCP' && item.fase !== 'HCP') return;
+
+                const key = `${item.minggu}-${item.bu}-${item.tp}`;
+                if (!map.has(key)) {
+                    map.set(key, {
+                        minggu: item.minggu, bu: item.bu, tp: item.tp,
+                        tipe_titik: item.tipe_titik, suhu: item.suhu,
+                        arus: 0, on_avg: null, off_avg: null, rest_avg: null, hcp_avg: null,
+                        timestamp: item.timestamp
+                    });
+                }
+                const entry = map.get(key);
+                if (item.fase === 'PH1') {
+                    entry.on_avg = item.on_avg;
+                    entry.off_avg = item.off_avg;
+                    entry.arus = item.i_ma || 0;
+                } else if (item.fase === 'PH2') {
+                    entry.rest_avg = item.rest_avg || item.off_avg;
+                } else if (item.fase === 'HCP') {
+                    entry.hcp_avg = item.hcp_avg || item.off_avg;
+                }
+            });
+
+            processedData = Array.from(map.values());
+            let finalData = buFilter === 'all' ? processedData : processedData.filter(d => d.bu === buFilter);
+            finalData.sort((a, b) => b.minggu - a.minggu || b.timestamp - a.timestamp);
+
+            renderTable(finalData, typeFilter);
+            prepareAndRenderChart(finalData, dataParam, typeFilter);
+        }
+
+        function prepareAndRenderChart(data, param, type) {
+            const weeks = [...new Set(data.map(d => d.minggu))].sort((a, b) => a - b);
+            const categories = weeks.map(w => `Minggu ${w}`);
+            
+            const seriesData = {
+                'Patch Repair': [],
+                'Bounding': [],
+                'Existing': [],
+                'Arus': []
+            };
+
+            weeks.forEach(w => {
+                const weekData = data.filter(d => d.minggu === w);
+                ['Patch Repair', 'Bounding', 'Existing'].forEach(tipe => {
+                    const logs = weekData.filter(d => d.tipe_titik === tipe && d[param] !== null);
+                    if (logs.length > 0) {
+                        const avg = logs.reduce((s, c) => s + c[param], 0) / logs.length;
+                        seriesData[tipe].push(Math.round(avg));
+                    } else {
+                        seriesData[tipe].push(null);
+                    }
+                });
+
+                if (type === 'SACP') {
+                    const logsArus = weekData.filter(d => d.arus !== null);
+                    const avgArus = logsArus.length > 0 ? (logsArus.reduce((s, c) => s + c.arus, 0) / logsArus.length) : 0;
+                    seriesData['Arus'].push(parseFloat(avgArus.toFixed(2)));
+                }
+            });
+
+            // FIX PEMETAAN SUMBU: Hubungkan seri dengan nama sumbu Y yang sesuai
+            const chartOptions = {
+                series: [
+                    { name: 'Patch Repair', type: 'line', data: seriesData['Patch Repair'] },
+                    { name: 'Bounding', type: 'line', data: seriesData['Bounding'] },
+                    { name: 'Existing', type: 'line', data: seriesData['Existing'] }
+                ],
+                chart: { 
+                    height: 450, 
+                    type: 'line', 
+                    toolbar: { show: false }, 
+                    fontFamily: 'Plus Jakarta Sans',
+                    dropShadow: { enabled: true, top: 10, left: 0, blur: 10, opacity: 0.1 }
+                },
+                stroke: { width: [5, 5, 5, 0], curve: 'smooth' },
+                colors: ['#10b981', '#f59e0b', '#3b82f6', '#cbd5e1'],
+                markers: { size: 6, strokeWidth: 3 },
+                xaxis: { categories: categories },
+                yaxis: [
+                    { 
+                        seriesName: 'Patch Repair', // Ini mengikat 3 line pertama ke sumbu mV
+                        min: -1200,
+                        max: 0,
+                        tickAmount: 6,
+                        title: { text: "Potensial (mV)", style: { color: '#1e293b', fontWeight: 800 } },
+                        labels: { 
+                            style: { colors: '#64748b', fontWeight: 600 },
+                            formatter: (val) => val.toFixed(0) + " mV"
+                        },
+                        reversed: true 
+                    },
+                    {
+                        seriesName: 'Patch Repair', // Sumbu dummy untuk Bounding agar skala sama
+                        show: false, min: -1200, max: 0, reversed: true
+                    },
+                    {
+                        seriesName: 'Patch Repair', // Sumbu dummy untuk Existing agar skala sama
+                        show: false, min: -1200, max: 0, reversed: true
+                    }
+                ],
+                tooltip: { shared: true, intersect: false },
+                legend: { position: 'top', fontWeight: 700 }
+            };
+
             if (type === 'SACP') {
-                const options = [
-                    { val: 'on_avg', text: 'On Potensial (V-on)' },
-                    { val: 'instantoff_avg', text: 'Instant Off (V-off)' },
-                    { val: 'rest_avg', text: 'Rest (Depolarisasi)' },
-                    { val: 'i_ma', text: 'Arus Proteksi (mA)' }
-                ];
-                options.forEach(o => paramSelect.add(new Option(o.text, o.val)));
-            } else {
-                paramSelect.add(new Option('Half-Cell Potential (HCP)', 'hcp'));
+                chartOptions.series.push({ name: 'Arus Proteksi (mA)', type: 'column', data: seriesData['Arus'] });
+                chartOptions.yaxis.push({
+                    seriesName: 'Arus Proteksi (mA)', // Sumbu khusus untuk Arus (indeks ke-4)
+                    opposite: true,
+                    min: 0,
+                    max: 5,
+                    tickAmount: 5,
+                    title: { text: "Arus (mA)", style: { color: '#64748b', fontWeight: 800 } },
+                    labels: { 
+                        style: { colors: '#64748b', fontWeight: 600 },
+                        formatter: (val) => val.toFixed(1) + " mA"
+                    },
+                    reversed: false 
+                });
             }
-            updateResearchChart();
-        };
 
-        function loadData() {
-            onValue(ref(db, `${basePath}/calib`), (snap) => {
-                const d = snap.val();
-                if (d) {
-                    document.getElementById('poly-a').value = d.poly_a || 0;
-                    document.getElementById('poly-b').value = d.poly_b || 1;
-                    document.getElementById('poly-c').value = d.poly_c || 0;
-                }
-            });
-
-            onValue(ref(db, `${basePath}/status_global`), (snap) => {
-                const d = snap.val();
-                const text = document.getElementById('anode-status-text');
-                const icon = document.getElementById('anode-icon');
-                if (d && d.status) {
-                    text.innerText = d.status;
-                    text.className = d.status === "PROTECTED" ? "text-xs font-black text-emerald-400" : "text-xs font-black text-rose-400";
-                    icon.className = d.status === "PROTECTED" ? "fas fa-shield-check text-emerald-400 animate-pulse" : "fas fa-shield-slash text-rose-400";
-                }
-            });
-
-            onValue(ref(db, `${basePath}/hasil_monitoring_final`), (snap) => {
-                const data = snap.val();
-                if (data) {
-                    allLogs = Object.values(data).filter(d => (d.on_avg > -5000 && d.v_off_avg > -5000)); 
-                    updateTable();
-                    updateResearchChart();
-                }
-            });
+            if (chartInstance) chartInstance.destroy();
+            chartInstance = new ApexCharts(document.querySelector("#chart-main"), chartOptions);
+            chartInstance.render();
         }
 
-        window.updateResearchChart = () => {
-            const selectedBU = document.getElementById('filter-bu').value;
-            const selectedParam = document.getElementById('filter-param').value;
-            const legendEl = document.getElementById('chart-legend');
-            
-            let buData = allLogs.filter(d => d.bu === selectedBU).sort((a,b) => a.timestamp - b.timestamp);
-            buData = buData.slice(-20);
-            
-            const labels = buData.map(d => d.waktu_lokal ? d.waktu_lokal.substring(5, 16) : '');
-            researchChart.data.labels = labels;
-            researchChart.data.datasets = [];
+        function renderTable(data, type) {
+            el.tableBody.innerHTML = "";
+            el.counter.innerText = `${data.length} Baris Data`;
 
-            const isArus = (selectedParam === 'i_ma');
-            researchChart.options.scales.y.reverse = !isArus;
-            researchChart.options.scales.y.title.text = isArus ? 'Arus (mA)' : 'Potensial (mV vs CSE)';
-            document.getElementById('chart-subtitle').innerText = `ANALISIS ${selectedParam.replace('_',' ').toUpperCase()} - BU ${selectedBU}`;
-
-            if (isArus) {
-                researchChart.data.datasets.push({
-                    label: 'Arus mA', 
-                    data: buData.map(d => d.i_ma || 0),
-                    borderColor: '#f59e0b', backgroundColor: 'rgba(245, 158, 11, 0.1)',
-                    borderWidth: 3, tension: 0.3, fill: true
+            if (type === 'SACP') {
+                el.tableHead.innerHTML = `<tr><th class="px-6 py-5">Minggu</th><th class="px-6 py-5">Benda Uji</th><th class="px-6 py-5 text-center">T/P</th><th class="px-6 py-5 text-center">Tipe Titik</th><th class="px-6 py-5 text-center text-amber-600">Arus (mA)</th><th class="px-6 py-5 text-center text-emerald-600">On (mV)</th><th class="px-6 py-5 text-center text-emerald-600">Off (mV)</th><th class="px-6 py-5 text-center text-blue-600 bg-emerald-50/50">Rest (mV)</th></tr>`;
+                data.forEach((row, i) => {
+                    const tr = document.createElement('tr');
+                    tr.className = "row-animate hover:bg-slate-50 border-b border-slate-100";
+                    tr.style.animationDelay = `${i * 0.03}s`;
+                    tr.innerHTML = `<td class="px-6 py-5 text-slate-400">Minggu ${row.minggu}</td><td class="px-6 py-5 text-slate-900 font-extrabold text-base">${row.bu}</td><td class="px-6 py-5 text-center font-mono text-xs text-slate-400">${row.tp}</td><td class="px-6 py-5 text-center">${getTypeBadge(row.tipe_titik)}</td><td class="px-6 py-5 text-center font-mono text-amber-600">${row.arus.toFixed(2)}</td><td class="px-6 py-5 text-center font-mono text-emerald-700">${row.on_avg ? Math.round(row.on_avg) : '-'}</td><td class="px-6 py-5 text-center font-mono text-emerald-700">${row.off_avg ? Math.round(row.off_avg) : '-'}</td><td class="px-6 py-5 text-center bg-emerald-50/30 font-black text-blue-600 italic text-lg">${row.rest_avg ? Math.round(row.rest_avg) : '-'}</td>`;
+                    el.tableBody.appendChild(tr);
                 });
-                legendEl.innerHTML = `<div class="flex items-center gap-2 col-span-4"><div class="w-3 h-3 rounded bg-amber-500"></div><span class="text-[10px] font-bold text-slate-600 uppercase">Energy Output (mA)</span></div>`;
             } else {
-                const targetFaseMap = {
-                    'on_avg': 'PH1',
-                    'instantoff_avg': 'PH1',
-                    'rest_avg': 'PH2',
-                    'hcp': 'STD'
-                };
-                const targetFase = targetFaseMap[selectedParam];
-
-                const t1Data = buData.map(d => (d.fase === targetFase && d.tp.includes('T1')) ? d[selectedParam] : null);
-                const t2Data = buData.map(d => (d.fase === targetFase && d.tp.includes('T2')) ? d[selectedParam] : null);
-
-                researchChart.data.datasets.push({
-                    label: 'Tulangan T1', data: t1Data,
-                    borderColor: '#10b981', backgroundColor: '#10b981', borderWidth: 4, tension: 0.3, spanGaps: true
+                el.tableHead.innerHTML = `<tr><th class="px-10 py-5">Minggu</th><th class="px-10 py-5">Benda Uji</th><th class="px-10 py-5 text-center">T/P</th><th class="px-10 py-5 text-center">Tipe Titik</th><th class="px-10 py-5 text-center bg-emerald-50/50 text-emerald-600">Potensial HCP (mV)</th></tr>`;
+                data.forEach((row, i) => {
+                    const tr = document.createElement('tr');
+                    tr.className = "row-animate hover:bg-slate-50 border-b border-slate-100";
+                    tr.style.animationDelay = `${i * 0.03}s`;
+                    tr.innerHTML = `<td class="px-10 py-5 text-slate-400">Minggu ${row.minggu}</td><td class="px-10 py-5 text-slate-900 font-extrabold text-base">${row.bu}</td><td class="px-10 py-5 text-center font-mono text-xs text-slate-400">${row.tp}</td><td class="px-10 py-5 text-center">${getTypeBadge(row.tipe_titik)}</td><td class="px-10 py-5 text-center bg-emerald-50/30 font-black text-emerald-600 italic text-xl">${row.hcp_avg ? Math.round(row.hcp_avg) : '-'}</td>`;
+                    el.tableBody.appendChild(tr);
                 });
-                researchChart.data.datasets.push({
-                    label: 'Tulangan T2', data: t2Data,
-                    borderColor: '#3b82f6', backgroundColor: '#3b82f6', borderWidth: 4, tension: 0.3, spanGaps: true
-                });
-
-                legendEl.innerHTML = `
-                    <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full bg-emerald-500"></div><span class="text-[10px] font-bold text-slate-600 uppercase">Tulangan T1</span></div>
-                    <div class="flex items-center gap-2"><div class="w-3 h-3 rounded-full bg-blue-500"></div><span class="text-[10px] font-bold text-slate-600 uppercase">Tulangan T2</span></div>
-                    <div class="flex items-center gap-2"><div class="w-6 h-0 border-t border-dashed border-emerald-400 opacity-40"></div><span class="text-[10px] font-bold text-slate-400 uppercase">Target -850mV</span></div>
-                    <div class="flex items-center gap-2"><div class="w-6 h-0 border-t border-dashed border-rose-400 opacity-40"></div><span class="text-[10px] font-bold text-slate-400 uppercase">Batas -350mV</span></div>
-                `;
             }
-            researchChart.update();
-        };
-
-        function updateTable() {
-            const tbody = document.getElementById('table-body');
-            tbody.innerHTML = "";
-            let dataTable = [...allLogs].reverse();
-            const start = (currentPage - 1) * rowsPerPage;
-            const paged = dataTable.slice(start, start + rowsPerPage);
-
-            paged.forEach(log => {
-                const tr = document.createElement('tr');
-                tr.className = "hover:bg-slate-50 transition-colors";
-                const phaseBadge = log.fase === 'PH1' ? 'badge-ph1' : (log.fase === 'PH2' ? 'badge-ph2' : 'badge-std');
-                const phaseDisplay = log.fase === 'STD' ? 'HCP' : log.fase;
-                
-                const primaryV = log.fase === 'STD' ? log.hcp : (log.fase === 'PH2' ? log.rest_avg : log.instantoff_avg);
-                const onV = log.on_avg ? Math.round(log.on_avg) + ' mV' : '-';
-
-                tr.innerHTML = `
-                    <td class="px-6 py-4 text-slate-400 font-mono text-[10px]">${log.waktu_lokal || '-'}</td>
-                    <td class="px-6 py-4 font-black text-slate-800 text-xs">${log.bu} <span class="text-[9px] text-slate-400 font-bold ml-1">${log.tp}</span></td>
-                    <td class="px-6 py-4 text-center">
-                        <span class="text-[8px] font-black px-2 py-0.5 rounded-full ${phaseBadge}">${phaseDisplay}</span>
-                    </td>
-                    <td class="px-6 py-4 text-center font-mono text-slate-400 text-xs">${onV}</td>
-                    <td class="px-6 py-4 text-center font-mono font-black text-emerald-600 bg-emerald-50">${Math.round(primaryV)} mV</td>
-                    <td class="px-6 py-4 text-center font-mono text-slate-500 text-xs">${log.i_ma ? log.i_ma.toFixed(2) : '0.00'}</td>
-                `;
-                tbody.appendChild(tr);
-            });
-            document.getElementById('prev-page').disabled = (currentPage === 1);
-            document.getElementById('next-page').disabled = (currentPage >= Math.ceil(allLogs.length/rowsPerPage));
         }
 
-        window.saveCalibration = () => {
-            const poly_a = parseFloat(document.getElementById('poly-a').value);
-            const poly_b = parseFloat(document.getElementById('poly-b').value);
-            const poly_c = parseFloat(document.getElementById('poly-c').value);
-            set(ref(db, `${basePath}/calib`), { poly_a, poly_b, poly_c })
-                .then(() => alert("Parameter SACP v8.0 Berhasil Disimpan!"));
+        function getTypeBadge(type) {
+            let className = "bg-slate-100 text-slate-500";
+            if (type === "Patch Repair") className = "badge-patch";
+            else if (type === "Bounding") className = "badge-bounding";
+            else if (type === "Existing") className = "badge-existing";
+            return `<span class="px-3 py-1 rounded-full text-[10px] font-bold italic tracking-tight ${className}">${type || 'Umum'}</span>`;
+        }
+
+        el.filterType.onchange = updateDataTypeOptions;
+        el.filterBU.onchange = processAndRender;
+        el.filterData.onchange = processAndRender;
+
+        document.getElementById('btn-save-cal').onclick = () => {
+            const a = parseFloat(document.getElementById('input-a').value) || 0;
+            const b = parseFloat(document.getElementById('input-b').value) || 1;
+            const c = parseFloat(document.getElementById('input-c').value) || 0;
+            set(ref(db, `${rootPath}/calib`), { poly_a: a, poly_b: b, poly_c: c }).then(() => alert("Parameter Kalibrasi Berhasil Diperbarui!"));
         };
 
-        window.calculateOffset = () => {
-            const manual = parseFloat(document.getElementById('manual-val').value);
-            const iot = parseFloat(document.getElementById('iot-val').value);
-            const currentC = parseFloat(document.getElementById('poly-c').value);
-            if (!isNaN(manual) && !isNaN(iot)) {
-                const diff = manual - iot;
-                document.getElementById('offset-result').innerHTML = `Saran Poly_C Baru: <b class="text-emerald-400">${(currentC + diff).toFixed(2)}</b>`;
-            }
+        document.getElementById('btn-export').onclick = () => {
+            if (!processedData.length) return alert("Tidak ada data.");
+            const type = el.filterType.value;
+            let excelRows = processedData.map(d => ({
+                'Minggu': d.minggu, 'BU': d.bu, 'TP': d.tp, 'Tipe Titik': d.tipe_titik, 'Suhu': d.suhu,
+                'Arus(mA)': d.arus, 'On_Avg': d.on_avg, 'Off_Avg': d.off_avg, 'Rest_Avg': d.rest_avg, 'HCP_Avg': d.hcp_avg
+            }));
+            const ws = XLSX.utils.json_to_sheet(excelRows);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Laporan Riset");
+            XLSX.writeFile(wb, `Laporan_CorroVision_${type}_v13.1.xlsx`);
         };
-
-        window.exportCSV = () => {
-            let csv = "Waktu,BU,Fase,T/P,On_Avg,Off_Avg,Rest_Avg,HCP,Arus_mA,Poly_A,Poly_B,Poly_C\n";
-            [...allLogs].reverse().forEach(d => { 
-                csv += `${d.waktu_lokal},${d.bu},${d.fase},${d.tp},${d.on_avg || 0},${d.instantoff_avg || 0},${d.rest_avg || 0},${d.hcp || 0},${d.i_ma || 0},${d.poly_a},${d.poly_b},${d.poly_c}\n`; 
-            });
-            const blob = new Blob([csv], { type: 'text/csv' });
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.setAttribute('href', url); a.setAttribute('download', `SACP_Detailed_Research_v8.csv`);
-            document.body.appendChild(a); a.click(); document.body.removeChild(a);
-        };
-
-        document.getElementById('prev-page').onclick = () => { if(currentPage > 1) { currentPage--; updateTable(); } };
-        document.getElementById('next-page').onclick = () => { if(currentPage < Math.ceil(allLogs.length/rowsPerPage)) { currentPage++; updateTable(); } };
     </script>
 </body>
 </html>
-
-
